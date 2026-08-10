@@ -9,6 +9,6 @@
 | MVP-F05 | Complete | Spring mode auto-configuration, runtime initialization, optional operation aspect, and integration tests |
 | MVP-F06 | Complete | FastAPI zero-touch instrumentation, provider coexistence, logging correlation, and async context tests |
 | MVP-F07 | Complete | Registered Java/Python business events, policy validation, correlation, and structured logging sinks |
-| MVP-F08 | Planned | Provider profiles and documentation |
+| MVP-F08 | Complete | Managed provider profile metadata, validation, setup guides, compatibility matrix, and migration runbook |
 | MVP-F09 | Planned | Reference applications and conformance |
 | MVP-F10 | Planned | Verification automation and hardening |

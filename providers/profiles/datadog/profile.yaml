@@ -1,0 +1,10 @@
+provider: datadog
+support: certified
+ingestion: managed_agent
+transport: otlp_grpc_or_http
+endpoint_variable: OTEL_EXPORTER_OTLP_ENDPOINT
+token_variable: LUMENS_ACCESS_TOKEN
+header_name: DD-API-KEY
+header_template: ${LUMENS_ACCESS_TOKEN}
+signals: [traces, metrics, logs]
+notes: Prefer Datadog Agent OTLP ingestion; verify agent configuration and API-key scopes.

@@ -1,0 +1,10 @@
+provider: new-relic
+support: certified
+ingestion: managed_otlp
+transport: otlp_http
+endpoint_variable: OTEL_EXPORTER_OTLP_ENDPOINT
+token_variable: LUMENS_ACCESS_TOKEN
+header_name: api-key
+header_template: ${LUMENS_ACCESS_TOKEN}
+signals: [traces, metrics, logs]
+notes: Verify regional OTLP endpoint and license-key permissions against New Relic documentation.

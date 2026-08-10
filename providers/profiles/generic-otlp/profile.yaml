@@ -1,0 +1,10 @@
+provider: generic-otlp
+support: otlp-compatible
+ingestion: managed_otlp
+transport: otlp_grpc_or_http
+endpoint_variable: OTEL_EXPORTER_OTLP_ENDPOINT
+token_variable: LUMENS_ACCESS_TOKEN
+header_name: configurable
+header_template: configurable
+signals: [traces, metrics, logs]
+notes: The client validates compatibility and supplies the destination authentication configuration.

@@ -1,0 +1,10 @@
+provider: dynatrace
+support: certified
+ingestion: managed_otlp
+transport: otlp_http
+endpoint_variable: OTEL_EXPORTER_OTLP_ENDPOINT
+token_variable: LUMENS_ACCESS_TOKEN
+header_name: Authorization
+header_template: Api-Token ${LUMENS_ACCESS_TOKEN}
+signals: [traces, metrics, logs]
+notes: Verify tenant-specific OTLP endpoint and token scopes against current Dynatrace documentation.

@@ -1,0 +1,10 @@
+provider: grafana-cloud
+support: certified
+ingestion: managed_otlp
+transport: otlp_http
+endpoint_variable: OTEL_EXPORTER_OTLP_ENDPOINT
+token_variable: LUMENS_ACCESS_TOKEN
+header_name: Authorization
+header_template: Basic ${LUMENS_ACCESS_TOKEN}
+signals: [traces, metrics, logs]
+notes: Verify Grafana Cloud stack endpoint, basic-auth format, and access-policy scopes.

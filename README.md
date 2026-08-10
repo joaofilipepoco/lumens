@@ -173,7 +173,7 @@ The MVP is delivered as independently requested features, not as one implementat
 
 Only the requested feature and its explicitly approved prerequisites are implemented in a delivery. Each delivery must leave the repository buildable, run the feature's feasible verification, update affected architecture or contract documentation, and report deferred work. Completing all MVP features is required for the overall MVP Definition of Done; completing one feature does not imply that later features have been started.
 
-Current delivery status is maintained in [`docs/feature-status.md`](docs/feature-status.md). MVP-F01 through MVP-F07 provide the foundation, semantic contract, Java/Python cores, Spring/FastAPI integration, and governed business events; request MVP-F08 for managed-provider profiles and documentation.
+Current delivery status is maintained in [`docs/feature-status.md`](docs/feature-status.md). MVP-F01 through MVP-F08 provide the foundation, semantic contract, Java/Python cores, framework integrations, business events, and managed-provider profiles; request MVP-F09 for reference services and cross-language conformance.
 
 ## Instrumentation Modes
 

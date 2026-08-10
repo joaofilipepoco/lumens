@@ -1,0 +1,10 @@
+provider: splunk
+support: certified
+ingestion: managed_otlp
+transport: otlp_http
+endpoint_variable: OTEL_EXPORTER_OTLP_ENDPOINT
+token_variable: LUMENS_ACCESS_TOKEN
+header_name: X-SF-Token
+header_template: ${LUMENS_ACCESS_TOKEN}
+signals: [traces, metrics, logs]
+notes: Use the Splunk Observability Cloud managed endpoint or supported Splunk distribution; verify realm endpoint and token scopes.
