@@ -1,0 +1,12 @@
+{
+  "traces": [
+    {"service": "java-bff", "name": "GET /enrich", "kind": "SERVER", "trace_id": "trace-a", "span_id": "span-a", "parent_span_id": null},
+    {"service": "java-bff", "name": "GET", "kind": "CLIENT", "trace_id": "trace-a", "span_id": "span-b", "parent_span_id": "span-a"},
+    {"service": "python-integration", "name": "GET /integrate", "kind": "SERVER", "trace_id": "trace-a", "span_id": "span-c", "parent_span_id": "span-b"},
+    {"service": "python-integration", "name": "integration.enrich", "kind": "INTERNAL", "trace_id": "trace-a", "span_id": "span-d", "parent_span_id": "span-c", "attributes": {"lumens.operation.outcome": "success"}}
+  ],
+  "events": [
+    {"event.name": "integration.enrichment.completed", "trace_id": "trace-a", "span_id": "span-d"}
+  ],
+  "metrics": ["lumens.operation.executions", "lumens.operation.duration"]
+}

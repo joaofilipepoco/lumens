@@ -1,4 +1,13 @@
-name: lumens-mvp-placeholder
-
-# MVP-F01 establishes the compose location. MVP-F09 adds reference services.
-services: {}
+services:
+  python-integration:
+    build:
+      context: ../..
+      dockerfile: examples/python-integration/Dockerfile
+    ports: ["8081:8081"]
+  java-bff:
+    build:
+      context: ../..
+      dockerfile: examples/java-bff/Dockerfile
+    environment:
+      PYTHON_INTEGRATION_URL: http://python-integration:8081
+    ports: ["8080:8080"]
