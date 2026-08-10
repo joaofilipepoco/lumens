@@ -9,6 +9,7 @@ The accelerator will provide consistent observability for:
 - Java 21 and Spring Boot 3.x applications.
 - Python 3.11-3.13 and FastAPI applications.
 - Distributed calls between Java and Python.
+- Automatic standard telemetry for supported frameworks and libraries without application annotations or decorators.
 - Custom operations, business outcomes, metrics, and business events.
 - OTLP export through an OpenTelemetry Collector.
 
@@ -26,6 +27,8 @@ Use standard OpenTelemetry for telemetry mechanics and Lumens for:
 - Testing and governance.
 
 Do not create a proprietary tracing system or replace OpenTelemetry APIs.
+
+Standard technical telemetry must be automatic for supported frameworks and libraries. Developers must not need Lumens annotations or decorators for HTTP server and client spans, database and messaging instrumentation, context propagation, technical failures, runtime metrics, or log correlation. Explicit Lumens APIs are reserved for business semantics and optional custom internal operations that standard instrumentation cannot infer.
 
 Java and Python SDKs must not call or directly depend on one another. They interoperate through:
 
@@ -182,6 +185,8 @@ Python:
 - `opentelemetry-instrument` initializes telemetry.
 - Lumens instruments FastAPI and provides business helpers without replacing providers.
 
+In both languages, supported standard telemetry must work without source-code annotations or decorators. Lumens must not wrap an already instrumented framework boundary with a duplicate operation span.
+
 ### Application-Managed Mode
 
 Use where agents or zero-code bootstrap are unsuitable.
@@ -313,6 +318,8 @@ Operation behavior:
 - Business outcomes such as `declined` or `unavailable` need not imply an OTel error.
 - Operation spans always end exactly once.
 - Arguments, return values, payloads, and arbitrary object strings are never captured automatically.
+- Custom operation APIs are optional and must not be required for standard framework or library telemetry.
+- Documentation must discourage custom operation instrumentation around an already instrumented boundary unless it represents a distinct business operation.
 
 ## Java Implementation
 
@@ -360,6 +367,8 @@ Operation behavior:
 - Align all Lumens and tested OpenTelemetry versions.
 
 ### Java API Example
+
+Spring controllers, supported clients, repositories, and messaging integrations receive standard telemetry without `ObservedOperation`. Use the annotation or programmatic API only for a meaningful custom internal operation that standard instrumentation does not represent.
 
 ```java
 @ObservedOperation("integration.enrich")
@@ -414,6 +423,8 @@ Provide:
 
 ### Python API Example
 
+FastAPI routes and supported libraries receive standard telemetry without `observed_operation`. Use the decorator or context manager only for a meaningful custom internal operation that standard instrumentation does not represent.
+
 ```python
 @observed_operation("integration.enrich")
 async def enrich(request: EnrichmentRequest) -> EnrichmentResult:
@@ -447,6 +458,8 @@ Do not replace Python's standard `logging` API.
 ## Business Events
 
 Business events are point-in-time domain occurrences, not spans.
+
+Business events are emitted explicitly because their occurrence and attributes cannot be inferred safely. Prefer an emission call over an annotation so application code can emit events conditionally and at the precise domain decision point.
 
 Provide:
 
@@ -545,9 +558,11 @@ The production reference must remain vendor-neutral and export through OTLP.
 Create a Spring Boot BFF that:
 
 - Exposes an HTTP endpoint.
-- Creates a registered Lumens operation.
+- Receives an automatic HTTP server span without annotating the endpoint.
 - Calls the Python FastAPI service.
+- Creates an automatic HTTP client span without annotating the client call.
 - Propagates `traceparent`.
+- Creates one registered Lumens operation for a distinct internal business operation.
 - Records a bounded outcome.
 - Emits one registered business event.
 - Contains no real PII.
@@ -557,9 +572,9 @@ Create a Spring Boot BFF that:
 Create a FastAPI service that:
 
 - Receives the Java request.
-- Continues the incoming trace.
+- Continues the incoming trace through an automatic FastAPI server span without decorating the route.
 - Creates a nested Lumens operation.
-- Simulates an external integration.
+- Simulates an external integration with automatic supported-client instrumentation.
 - Records a bounded outcome.
 - Demonstrates async context propagation.
 - Emits one registered business event.
@@ -572,6 +587,8 @@ The integration test must prove:
 - The Python server span is a descendant of the Java client span.
 - Each operation has a distinct span ID.
 - Standard HTTP spans are not duplicated.
+- Standard server and client spans and propagation require no Lumens annotations or decorators.
+- Custom operation spans appear only where explicitly requested for distinct internal operations.
 - Service resource names remain distinct.
 - Logs and business events contain trace correlation.
 - Business metrics exist even when traces are not sampled.
@@ -587,7 +604,8 @@ Java tests:
 
 - Unit tests with OTel in-memory exporters.
 - Spring auto-configuration tests.
-- Annotation tests.
+- Zero-touch Spring server and supported-client instrumentation tests.
+- Optional custom-operation annotation tests.
 - CompletionStage and Reactor tests.
 - Agent-mode integration test.
 - Application-managed integration test.
@@ -596,8 +614,8 @@ Java tests:
 Python tests:
 
 - Unit tests with in-memory exporters.
-- FastAPI ASGI integration tests.
-- Sync and async decorator tests.
+- Zero-touch FastAPI ASGI and supported-client instrumentation tests.
+- Optional sync and async custom-operation decorator tests.
 - Background task tests.
 - Context leakage tests across concurrent requests.
 - Repeated initialization tests.
@@ -627,6 +645,8 @@ Document:
 - Five-minute Java setup.
 - Five-minute Python setup.
 - Agent versus application-managed mode.
+- Which standard telemetry is automatic and requires no source annotations or decorators.
+- When optional custom operation instrumentation is appropriate and how to avoid duplicate spans.
 - Java-to-Python context propagation.
 - When to use a span, span event, metric, log, or business event.
 - Client contract customization.
@@ -643,8 +663,8 @@ Document:
 2. Implement the semantic registry schema and validator.
 3. Implement deterministic Java and Python code generation.
 4. Implement Java API and in-memory test support.
-5. Implement Spring auto-configuration, starter, runtime, and annotation behavior.
-6. Implement Python core, FastAPI integration, and test support.
+5. Implement Spring zero-touch standard instrumentation, auto-configuration, starter, runtime, and optional annotation behavior.
+6. Implement Python zero-touch standard instrumentation, core business helpers, FastAPI integration, optional decorators, and test support.
 7. Implement structured business-event sinks.
 8. Implement Collector local and production reference configurations.
 9. Build Java and Python reference applications.
@@ -676,6 +696,7 @@ The MVP is complete only when:
 - Unit and integration tests pass.
 - The semantic generator produces matching Java and Python definitions.
 - The Java BFF and Python service produce one correctly connected trace.
+- Supported standard server and client telemetry works without Lumens annotations or decorators.
 - No duplicate HTTP spans are present.
 - Operation metrics are emitted independently from trace sampling.
 - Business events are validated and correlated.

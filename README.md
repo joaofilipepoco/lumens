@@ -9,7 +9,8 @@ Lumens is a planned, vendor-neutral observability accelerator for Java/Spring Bo
 
 OpenTelemetry already handles trace and span creation, context propagation, instrumentation, and export. Lumens does not replace it. Lumens adds the conventions and controls needed to apply it consistently across client solutions:
 
-- Simple annotations, decorators, and context managers for meaningful custom operations.
+- Zero-code standard telemetry for supported frameworks and libraries.
+- Explicit APIs for business events, outcomes, and meaningful custom operations.
 - End-to-end context propagation between Java and Python services.
 - Consistent business outcomes, metrics, and structured business events.
 - A machine-readable semantic contract shared by both languages.
@@ -64,9 +65,9 @@ OpenTelemetry owns trace IDs, span IDs, and parent relationships. Lumens does no
 
 | Component | Purpose |
 |---|---|
-| Java API | Custom operations, annotations, outcomes, events, and policy interfaces |
+| Java API | Business events, outcomes, optional custom operations, and policy interfaces |
 | Spring Boot integration | Auto-configuration for platform-managed and application-managed modes |
-| Python SDK | Sync and async decorators, context managers, events, lifecycle, and FastAPI integration |
+| Python SDK | Business events, outcomes, optional custom operations, lifecycle, and FastAPI integration |
 | Semantic contract | YAML registry and JSON Schema for operations, attributes, outcomes, events, and baggage |
 | Contract generator | Deterministic Java and Python constants with client overlay support |
 | Collector assets | Local and production-reference OTLP pipelines, redaction, limits, and batching |
@@ -83,7 +84,8 @@ OpenTelemetry owns trace IDs, span IDs, and parent relationships. Lumens does no
 - OTLP over gRPC, with HTTP available where configured.
 - Java agent and Python zero-code instrumentation profiles.
 - Application-managed instrumentation where agents are unsuitable.
-- Custom spans, bounded operation metrics, business outcomes, and structured events.
+- Automatic standard spans and metrics for supported frameworks and libraries.
+- Optional custom spans, bounded operation metrics, business outcomes, and structured events.
 - SLF4J/Logback and Python `logging` trace correlation.
 - Shared semantic contracts and client overlays.
 - Local and production-reference Collector configurations.
@@ -107,7 +109,7 @@ Recommended for production:
 
 - Java uses the OpenTelemetry Java agent.
 - Python uses `opentelemetry-instrument`.
-- Lumens consumes the existing OpenTelemetry providers and adds business instrumentation.
+- Lumens consumes the existing OpenTelemetry providers and adds business instrumentation without duplicating standard spans.
 
 ### Application-Managed
 
@@ -122,6 +124,20 @@ Lumens must detect clear configuration conflicts, initialize idempotently, and n
 ## Intended Developer Experience
 
 The following examples show the target API. Package artifacts are not available yet.
+
+### Standard Observability
+
+Supported HTTP servers, HTTP clients, database clients, messaging libraries, runtime metrics, context propagation, technical failures, and log correlation are instrumented automatically. Developers do not add Lumens annotations or decorators to Spring controllers, FastAPI routes, repositories, or supported clients.
+
+Standard instrumentation is the default. Lumens must reuse OpenTelemetry instrumentation rather than create a second span or metric for an already instrumented boundary.
+
+### Business Telemetry
+
+Developers explicitly emit registered business events and set business outcomes because these semantics cannot be inferred reliably from framework activity. Business events use an emission API rather than an annotation because an event may occur conditionally within an operation.
+
+### Optional Custom Operations
+
+Annotations, decorators, and context managers are escape hatches for meaningful internal operations that are not already represented by standard instrumentation. They are not required for baseline observability and should not be placed on already instrumented framework boundaries solely to obtain telemetry.
 
 ### Java
 
