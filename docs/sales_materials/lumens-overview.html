@@ -193,11 +193,17 @@
         <div class="grid two">
           <div class="card split-card">
             <h3 class="coral">Before</h3>
-            <pre class="code"><span class="comment">// custom tracing, tags, error paths,
-// metrics and vendor correlation...</span>
-<span class="key">Span</span> span = tracer.startSpan(<span class="value">"payment-"</span> + id);
-span.setAttribute(<span class="value">"customer"</span>, customerId);
-<span class="muted">...</span></pre>
+            <pre class="code"><span class="key">Span</span> span = tracer.spanBuilder(<span class="value">"payment.authorize"</span>)
+    .startSpan();
+<span class="key">try</span> (Scope scope = span.makeCurrent()) {
+  span.setAttribute(<span class="value">"payment.provider"</span>, provider);
+  var result = authorize();
+  span.setAttribute(<span class="value">"outcome"</span>, result.status());
+  metrics.counter(<span class="value">"payments"</span>).add(1, tags);
+  <span class="key">return</span> result;
+} <span class="key">catch</span> (Exception error) {
+  span.recordException(error); span.setStatus(ERROR); throw error;
+} <span class="key">finally</span> { span.end(); }</pre>
           </div>
           <div class="card split-card good">
             <h3 class="accent">With Lumens</h3>
