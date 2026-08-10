@@ -11,9 +11,54 @@ The accelerator will provide consistent observability for:
 - Distributed calls between Java and Python.
 - Automatic standard telemetry for supported frameworks and libraries without application annotations or decorators.
 - Custom operations, business outcomes, metrics, and business events.
-- OTLP export through an OpenTelemetry Collector.
+- Standard OTLP export to managed observability providers.
 
-React and JavaScript are explicitly out of scope for this release.
+JavaScript, TypeScript, Node.js, NestJS, Next.js, React, and Angular are explicitly out of scope for this release and reserved for Phase 2.
+
+## Product Roadmap
+
+Use these phase names consistently throughout implementation and documentation:
+
+### MVP: Managed Provider Backend
+
+- Java 21 with Spring Boot 3.x.
+- Python 3.11-3.13 with FastAPI.
+- Automatic standard observability without Lumens annotations or decorators.
+- Explicit governed business telemetry and optional custom internal operations.
+- Provider-managed ingestion profiles for the five certified destinations.
+- No Lumens or Deloitte production Collector.
+
+### Phase 1: Optional Organization-Managed Collector
+
+- A production OpenTelemetry Collector gateway operated by an organization that explicitly accepts ownership.
+- Central credentials, persistent queues, routing, sampling, filtering, redaction, dual export, high availability, and disaster recovery.
+- Optional provider-specific enrichment after the portable processing pipeline.
+- No application source-code dependency on the gateway.
+
+Phase 1 is optional. It must not become a prerequisite for the MVP or later SDKs.
+
+### Phase 2: JavaScript and TypeScript Ecosystem
+
+- One TypeScript SDK distribution with isolated runtime-specific entry points.
+- Node.js server instrumentation.
+- NestJS integration.
+- Next.js server integration through supported instrumentation hooks.
+- Separate Next.js browser and Edge adapters because their runtime capabilities differ from Node.js.
+- Framework-neutral browser support used by React and Angular integrations.
+- Shared semantic contract, business-event API, privacy policy, generated constants, and test utilities.
+
+Node.js and NestJS should provide automatic standard server telemetry where supported. React and Angular components must not require decorators for standard browser telemetry.
+
+Browser support requires explicit consent controls, Web Vitals, route/navigation tracing, error capture, fetch/XHR instrumentation, cross-origin propagation allowlists, session policy, and strict payload and PII protection. Provider access tokens must never be included in browser bundles. Browser export must use a provider-supported public RUM endpoint or a separately approved secure ingestion proxy. Provider portability for browser telemetry must not be claimed until each route is tested.
+
+### Phase 3: Lumens Experience Generator
+
+- A shared GenAI-assisted planning engine.
+- A vendor-neutral asset specification.
+- Dynatrace, Splunk, Datadog, Grafana, and New Relic provider adapters.
+- Safe generation of dashboards, alerts, monitors, SLOs, ownership metadata, and runbook links.
+
+Later phases require separate plans, compatibility baselines, tests, security reviews, and Definitions of Done. The current Build Agent implements only the MVP, except for the explicitly requested extension-point documentation.
 
 ## Core Principle
 
@@ -75,7 +120,7 @@ Client-specific customization must be supported through:
 - Standard `OTEL_*` configuration.
 - Client contract overlays.
 - Generated client semantic constants.
-- Collector configuration overlays.
+- Provider destination profiles.
 - Pluggable event sinks and policy extensions.
 
 The generator must allow client-specific generated Java packages and Python modules while retaining the stable Lumens core packages.
@@ -97,6 +142,15 @@ The generator must allow client-specific generated Java packages and Python modu
     client-customization.md
     troubleshooting.md
     compatibility.md
+    providers/
+      README.md
+      dynatrace.md
+      splunk.md
+      datadog.md
+      grafana-cloud.md
+      new-relic.md
+      switching-providers.md
+      compatibility-matrix.md
     adr/
       001-opentelemetry-foundation.md
       002-explicit-instrumentation-modes.md
@@ -132,9 +186,14 @@ The generator must allow client-specific generated Java packages and Python modu
     src/lumens_observability/
     tests/
 
-  collector/
-    local/
-    production-reference/
+  providers/
+    profiles/
+      dynatrace/
+      splunk/
+      datadog/
+      grafana-cloud/
+      new-relic/
+      generic-otlp/
     tests/
 
   examples/
@@ -161,6 +220,7 @@ Support:
 - A current compatible FastAPI and Starlette release.
 - OTLP over gRPC for backend services.
 - OTLP over HTTP where configured.
+- Managed ingestion profiles for Dynatrace, Splunk Observability Cloud, Datadog, Grafana Cloud, and New Relic.
 
 Do not claim Spring Boot 4, native-image, older Java, or older Python compatibility without tests.
 
@@ -210,6 +270,51 @@ Python:
 - Emit actionable diagnostics for possible external-agent conflicts.
 - Make initialization idempotent.
 - Test repeated initialization and duplicate instrumentation.
+
+## Destination Profiles
+
+Instrumentation mode and export destination are separate concerns. Platform-managed and application-managed services must both select destinations through deployment configuration without changing application source code.
+
+MVP certified destinations:
+
+- Dynatrace.
+- Splunk Observability Cloud.
+- Datadog.
+- Grafana Cloud.
+- New Relic.
+
+Support levels:
+
+- Certified: documented and tested end to end by Lumens.
+- OTLP-compatible: expected to work through standard OTLP without a formal compatibility guarantee.
+- Custom: configured and validated by the client.
+
+Use a minimal deployment interface equivalent to:
+
+```text
+LUMENS_PROVIDER=dynatrace
+OTEL_EXPORTER_OTLP_ENDPOINT=https://provider-endpoint.example
+LUMENS_ACCESS_TOKEN=<deployment-secret>
+```
+
+Standard `OTEL_*` variables remain authoritative. `LUMENS_PROVIDER` selects tested authentication headers, transport, signal endpoints, and documented limitations. Do not infer a provider from its endpoint. Verify current endpoints, headers, and supported capabilities against official provider documentation during implementation.
+
+Each certified profile must:
+
+- Prefer direct managed OTLP ingestion where the provider supports it reliably.
+- Otherwise use a provider-managed ingestion component.
+- Require no provider-specific SDK or telemetry API in application code.
+- Preserve canonical OpenTelemetry resource attributes and governed `lumens.*` semantics.
+- Document traces, metrics, and logs support separately.
+- Isolate provider-prefixed metadata and enrichment outside Lumens APIs and semantic contracts.
+- Provide configuration validation and actionable diagnostics without logging secrets.
+- Permit credential rotation without rebuilding the application.
+
+Secrets must come from environment variables or an approved secret manager, use least privilege, and never be committed, sent as telemetry, included in fixtures, or exposed through diagnostics.
+
+Provider-specific enrichment such as Dynatrace `dt.*` entity metadata, Datadog `dd.*` metadata, Splunk-specific dimensions, Grafana data-source labels, or New Relic proprietary entity metadata may be added by provider-managed infrastructure. Lumens core must not depend on these fields.
+
+The portability guarantee is limited to application instrumentation and semantic data: changing between certified providers requires no application source-code change or rebuild. Deployment configuration, credentials, provider-supported infrastructure, dashboards, alerts, SLOs, proprietary queries, historical data, retention policies, and provider-specific topology remain destination concerns.
 
 ## Semantic Contract
 
@@ -532,24 +637,84 @@ Python:
 - Avoid duplicate handlers.
 - Keep OTLP log export optional because Python log signal integrations remain less stable than tracing.
 
-## Collector Assets
+## OTLP Test Harness
 
-Provide:
+The MVP may use in-process exporters, ephemeral test containers, or another disposable OTLP receiver to inspect normalized telemetry and produce golden fixtures during development and CI. This test harness must support privacy checks and cross-language trace verification without becoming deployed solution infrastructure.
 
-- Local development Collector configuration.
-- Production reference configuration.
-- OTLP gRPC and HTTP receivers.
-- Memory limiter and batching.
-- Health checks.
-- Attribute removal and redaction.
-- Environment-based upstream endpoint configuration.
-- Collector self-observability.
-- No embedded credentials.
-- No direct browser endpoint.
+Do not package, deploy, or operate a Lumens OpenTelemetry Collector in the MVP. Production telemetry must use the selected provider's managed OTLP endpoint or provider-managed ingestion component.
 
-The local environment should allow developers to inspect traces without requiring a commercial vendor.
+## Phase 1: Optional Organization-Managed Gateway
 
-The production reference must remain vendor-neutral and export through OTLP.
+Phase 1 may provide an organization-managed OpenTelemetry Collector gateway. It is explicitly outside the MVP and must be adopted only when an organization accepts operational ownership, cost, security, availability, and maintenance responsibilities.
+
+Potential capabilities:
+
+- A stable internal OTLP endpoint.
+- Centralized provider credentials and rotation.
+- Persistent queues and provider-outage buffering.
+- Central routing, filtering, sampling, and redaction.
+- Dual export during provider migrations.
+- Regional high availability and disaster recovery.
+- Provider-specific enrichment after the portable processing pipeline.
+- Gateway capacity management and self-observability.
+
+Applications and Lumens semantic contracts must remain independent of this gateway. Introducing or removing it must require deployment configuration changes only.
+
+## Phase 2: JavaScript and TypeScript Ecosystem
+
+Phase 2 may add JavaScript and TypeScript support through one npm distribution with runtime-specific exports for Node.js, NestJS, Next.js, browser, React, Angular, and Next.js Edge environments. Shared code must remain runtime-neutral, while Node and browser dependencies and bundles remain isolated.
+
+Phase 2 requirements include:
+
+- Automatic supported server telemetry for Node.js, NestJS, and Next.js server workloads.
+- Browser-safe route, Web Vitals, fetch/XHR, and technical-error instrumentation for React, Angular, and Next.js client workloads.
+- Explicit business-event and custom-operation APIs aligned with Java and Python semantics.
+- Generated TypeScript semantic constants from the shared contract.
+- Context propagation across supported server boundaries and allowlisted browser origins.
+- Separate compatibility claims and tests for Node.js, browsers, and Next.js Edge.
+- No provider credentials, Node-only modules, request payloads, or sensitive values in browser bundles.
+- Consent, session, privacy, cardinality, and failure-isolation tests.
+- A documented secure browser ingestion route for every certified provider before claiming support.
+
+Phase 2 is not part of the current repository implementation order or MVP Definition of Done.
+
+## Phase 3: Lumens Experience Generator
+
+Phase 3 may add an optional **Lumens Experience Generator** that creates provider assets from the Lumens semantic contract, service metadata, and a declared solution archetype:
+
+```text
+semantic contract + service metadata + solution archetype
+                         |
+                         v
+                  GenAI planning layer
+                         |
+                         v
+             vendor-neutral asset specification
+                         |
+                         v
+                    provider adapter
+                         |
+                         v
+             dashboards, alerts, monitors, SLOs
+```
+
+Use one shared planning engine with Dynatrace, Splunk, Datadog, Grafana, and New Relic adapters. Do not duplicate planning logic in five independent agents.
+
+The component may generate service overview, request rate/error/duration, dependency, business-outcome, and business-event dashboards, plus provider-supported alerts, monitors, SLOs, ownership metadata, and runbook links.
+
+Safety and lifecycle requirements:
+
+- Produce and schema-validate a vendor-neutral intermediate specification.
+- Provide deterministic templates when GenAI is unavailable or disabled.
+- Separate `generate`, `plan`, and `apply`; default to dry-run and require explicit human approval before writes.
+- Never expose provider tokens to the language model.
+- Never send production telemetry, payloads, PII, secrets, or customer data to GenAI.
+- Use least-privilege provider API credentials outside the model boundary.
+- Make resource creation idempotent and tag ownership, contract version, and generator version.
+- Detect drift and do not overwrite manually managed resources by default.
+- Record auditable proposals and applied changes with rollback or deletion plans.
+
+The MVP defines only the vendor-neutral asset model and provider-adapter extension points. GenAI execution and provider API writes are not MVP deliverables.
 
 ## Reference Applications
 
@@ -566,6 +731,7 @@ Create a Spring Boot BFF that:
 - Records a bounded outcome.
 - Emits one registered business event.
 - Contains no real PII.
+- Selects its destination profile entirely through deployment configuration.
 
 ### Python Integration Service
 
@@ -578,6 +744,7 @@ Create a FastAPI service that:
 - Records a bounded outcome.
 - Demonstrates async context propagation.
 - Emits one registered business event.
+- Selects its destination profile entirely through deployment configuration.
 
 ## Cross-Language Verification
 
@@ -593,8 +760,10 @@ The integration test must prove:
 - Logs and business events contain trace correlation.
 - Business metrics exist even when traces are not sampled.
 - Invalid `traceparent` values do not crash either service.
-- Collector unavailability does not fail application requests.
+- Provider ingestion unavailability does not fail application requests.
 - Forbidden test secrets never appear in captured telemetry.
+- Switching certified destination configuration requires no source change or application rebuild.
+- Canonical service identity and `lumens.*` semantics remain stable across destination profiles.
 
 Capture normalized OTLP output and compare semantic golden fixtures. Ignore timestamps, generated IDs, ordering, and other nondeterministic fields.
 
@@ -631,12 +800,23 @@ Contract tests:
 - Deterministic generation.
 - Generated Java and Python parity.
 
-Collector tests:
+OTLP test-harness tests:
 
-- Configuration validation.
-- Redaction tests.
-- OTLP receiver tests.
+- Normalized OTLP capture and golden-fixture tests.
+- Privacy and redaction tests.
+- Cross-language trace tests.
 - Export failure behavior.
+- Proof that no Collector is required in a deployed MVP solution.
+
+Provider profile tests:
+
+- Configuration validation for all five certified destinations.
+- Guarded end-to-end ingestion tests that skip clearly when credentials are unavailable.
+- No provider-specific application SDK or telemetry API.
+- Authentication secrets absent from telemetry, fixtures, logs, and diagnostics.
+- Consistent resource identity and business semantics across profiles.
+- Provider-agent coexistence tests that prevent duplicate spans where applicable.
+- Deployment-only switching tests with no application source change or rebuild.
 
 ## Documentation Requirements
 
@@ -645,6 +825,7 @@ Document:
 - Five-minute Java setup.
 - Five-minute Python setup.
 - Agent versus application-managed mode.
+- Instrumentation mode versus destination profile.
 - Which standard telemetry is automatic and requires no source annotations or decorators.
 - When optional custom operation instrumentation is appropriate and how to avoid duplicate spans.
 - Java-to-Python context propagation.
@@ -656,6 +837,15 @@ Document:
 - Async and reactive limitations.
 - Package publication instructions using environment-provided credentials.
 - Supported versions and tested dependency matrix.
+- Certified, OTLP-compatible, and custom destination support levels.
+- Provider setup guides for Dynatrace, Splunk Observability Cloud, Datadog, Grafana Cloud, and New Relic.
+- A compatibility matrix covering ingestion route, authentication, transport, signals, and known limitations.
+- A provider-switching runbook with validation, rollback, asset recreation, old-agent removal, and credential revocation.
+- The Phase 1 optional organization-managed gateway and its ownership implications.
+- The Phase 2 JavaScript and TypeScript runtime architecture, browser security boundary, and deferred compatibility claims.
+- The Phase 3 Lumens Experience Generator architecture and safety boundaries.
+
+Each certified provider guide must document prerequisites, the recommended managed ingestion route, current endpoint format, authentication, secret handling, required environment variables, TLS, signal support, Java and Python setup, end-to-end verification, duplicate-instrumentation prevention, provider enrichment, limitations, troubleshooting, and rollback. Verify changeable provider details against current official documentation during implementation.
 
 ## Implementation Order
 
@@ -666,11 +856,13 @@ Document:
 5. Implement Spring zero-touch standard instrumentation, auto-configuration, starter, runtime, and optional annotation behavior.
 6. Implement Python zero-touch standard instrumentation, core business helpers, FastAPI integration, optional decorators, and test support.
 7. Implement structured business-event sinks.
-8. Implement Collector local and production reference configurations.
-9. Build Java and Python reference applications.
-10. Implement cross-language OTLP verification.
-11. Add verification scripts and CI-ready checks.
-12. Run all tests and update the compatibility document with actual results.
+8. Implement disposable OTLP conformance test tooling without a deployed Collector dependency.
+9. Implement and document the five certified managed-provider profiles.
+10. Build Java and Python reference applications.
+11. Implement cross-language, provider-failure, and destination-switching verification.
+12. Define the future vendor-neutral asset model and provider-adapter extension points without implementing GenAI writes.
+13. Add verification scripts and CI-ready checks.
+14. Run all tests and update the compatibility documents with actual results.
 
 ## Verification Commands
 
@@ -702,8 +894,14 @@ The MVP is complete only when:
 - Business events are validated and correlated.
 - Sensitive test markers are absent from exported telemetry.
 - Platform-managed and application-managed modes are documented and tested.
-- Collector outage tests prove application requests continue.
+- All five certified managed-provider routes have setup guides, profiles, and guarded compatibility tests.
+- Certified provider switching requires no application source change or rebuild.
+- Provider ingestion outage tests prove application requests continue.
+- Development and CI telemetry inspection uses only disposable test tooling.
+- No Deloitte-managed production Collector or gateway is required.
+- Provider credentials are absent from source, fixtures, telemetry, and diagnostics.
+- Phase 1 Collector, Phase 2 JavaScript/TypeScript ecosystem, and Phase 3 Experience Generator are documented but not implemented by the MVP Build Agent.
 - All dependencies are pinned.
 - Compatibility results are documented.
-- No React or JavaScript implementation is included.
+- No JavaScript, TypeScript, Node.js, NestJS, Next.js, React, or Angular implementation is included.
 - No package is published and no repository commit is created automatically.

@@ -15,7 +15,7 @@ OpenTelemetry already handles trace and span creation, context propagation, inst
 - Consistent business outcomes, metrics, and structured business events.
 - A machine-readable semantic contract shared by both languages.
 - Privacy, sensitive-data, and metric-cardinality safeguards.
-- Vendor-neutral OTLP export through an OpenTelemetry Collector.
+- Vendor-neutral OTLP export to managed observability providers.
 - Test utilities that verify telemetry behavior rather than only application behavior.
 
 ## Design Principles
@@ -34,22 +34,21 @@ OpenTelemetry already handles trace and span creation, context propagation, inst
 Java/Spring Boot BFF                    Python/FastAPI integration
 +--------------------------+           +--------------------------+
 | OTel auto-instrumentation |           | OTel auto-instrumentation |
-| Lumens operation API      |           | Lumens operation API      |
+| Lumens business telemetry |           | Lumens business telemetry |
 | Lumens semantic contract  |           | Lumens semantic contract  |
 +------------+-------------+           +-------------+------------+
              |       W3C trace context                |
              +--------------------------------------->|
              |                                        |
              +------------------+---------------------+
-                                | OTLP
+                                | standard OTLP
                                 v
-                   +--------------------------+
-                   | OpenTelemetry Collector  |
-                   | policy, redaction, batch |
-                   +------------+-------------+
-                                |
-                                v
-                   Observability backend(s)
+                +----------------------------------+
+                | Provider-managed OTLP endpoint, |
+                | agent, or supported Collector   |
+                +----------------+-----------------+
+                                 v
+                   Managed observability provider
 ```
 
 Java and Python SDKs do not directly depend on or communicate with each other. They remain compatible through:
@@ -57,7 +56,7 @@ Java and Python SDKs do not directly depend on or communicate with each other. T
 - W3C `traceparent` and `tracestate` propagation.
 - OpenTelemetry APIs and semantic conventions.
 - A shared versioned Lumens contract.
-- OTLP export through a Collector.
+- Standard OTLP and a shared semantic contract.
 
 OpenTelemetry owns trace IDs, span IDs, and parent relationships. Lumens does not generate duplicate correlation identifiers.
 
@@ -70,7 +69,8 @@ OpenTelemetry owns trace IDs, span IDs, and parent relationships. Lumens does no
 | Python SDK | Business events, outcomes, optional custom operations, lifecycle, and FastAPI integration |
 | Semantic contract | YAML registry and JSON Schema for operations, attributes, outcomes, events, and baggage |
 | Contract generator | Deterministic Java and Python constants with client overlay support |
-| Collector assets | Local and production-reference OTLP pipelines, redaction, limits, and batching |
+| Provider profiles | Tested deployment configuration for certified managed providers |
+| OTLP test harness | Optional development and CI inspection; never deployed as solution infrastructure |
 | Test kits | In-memory telemetry assertions and cross-language conformance tests |
 | Reference services | Spring Boot BFF calling a FastAPI integration service |
 
@@ -88,16 +88,36 @@ OpenTelemetry owns trace IDs, span IDs, and parent relationships. Lumens does no
 - Optional custom spans, bounded operation metrics, business outcomes, and structured events.
 - SLF4J/Logback and Python `logging` trace correlation.
 - Shared semantic contracts and client overlays.
-- Local and production-reference Collector configurations.
+- Certified profiles for Dynatrace, Splunk Observability Cloud, Datadog, Grafana Cloud, and New Relic.
+- Optional in-process or ephemeral OTLP test tooling for development and conformance testing.
 
 ### Not in the MVP
 
-- React or browser JavaScript instrumentation.
+- JavaScript and TypeScript runtimes or frameworks.
 - Audit-grade event delivery.
 - Continuous profiling.
 - Broad legacy runtime support.
 - Vendor-specific telemetry APIs.
 - Automatic request or response payload capture.
+- A Deloitte-managed production Collector or telemetry gateway.
+- Automated GenAI creation of provider dashboards and other assets.
+
+## Product Roadmap
+
+The roadmap separates the current managed-services-first MVP from optional later product phases:
+
+| Stage | Scope |
+|---|---|
+| MVP | Java/Spring Boot, Python/FastAPI, automatic standard telemetry, governed business telemetry, and provider-managed ingestion profiles |
+| Phase 1 | Optional organization-managed OpenTelemetry Collector gateway |
+| Phase 2 | JavaScript and TypeScript ecosystem for Node.js, NestJS, Next.js, React, and Angular |
+| Phase 3 | Lumens Experience Generator for dashboards, alerts, monitors, and SLOs |
+
+Phase 1 is optional because operating a production gateway introduces infrastructure, security, availability, cost, and maintenance responsibilities. The MVP remains valid without it.
+
+Phase 2 should provide one TypeScript SDK distribution with runtime-specific entry points rather than one universal runtime implementation. Node.js and NestJS use server-side OpenTelemetry; Next.js requires separate server, browser, and Edge handling; React and Angular use browser-safe instrumentation. Browser bundles must never contain provider access tokens and must use a provider-supported public RUM route or a secure ingestion proxy. Consent, Web Vitals, route changes, errors, fetch/XHR tracing, propagation allowlists, and strict PII controls are required before browser support can be certified.
+
+Phase 3 is described under Future Platform Options and remains independent of application instrumentation.
 
 ## Instrumentation Modes
 
@@ -120,6 +140,32 @@ For environments where agents or zero-code bootstrap cannot be used:
 - Standard `OTEL_*` variables remain authoritative for SDK and exporter configuration.
 
 Lumens must detect clear configuration conflicts, initialize idempotently, and never silently replace an application-owned OpenTelemetry provider.
+
+Instrumentation mode and export destination are independent decisions. A service uses either platform-managed or application-managed instrumentation, then selects a destination profile through deployment configuration.
+
+## Managed Provider Destinations
+
+The MVP certified destinations are Dynatrace, Splunk Observability Cloud, Datadog, Grafana Cloud, and New Relic. Each profile uses the provider's managed OTLP endpoint or provider-managed ingestion component. Lumens and Deloitte do not deploy or operate an OpenTelemetry Collector as part of the MVP solution.
+
+```text
+LUMENS_PROVIDER=dynatrace
+OTEL_EXPORTER_OTLP_ENDPOINT=https://provider-endpoint.example
+LUMENS_ACCESS_TOKEN=<deployment-secret>
+```
+
+Standard `OTEL_*` configuration remains authoritative. `LUMENS_PROVIDER` selects tested authentication, protocol, and signal conventions because these details differ by provider. Credentials come from a deployment secret manager, use least privilege, support rotation, and must never enter source code or telemetry.
+
+Lumens defines three support levels:
+
+| Level | Commitment |
+|---|---|
+| Certified | Documented and tested end to end by Lumens |
+| OTLP-compatible | Expected to work through standard OTLP but not formally guaranteed |
+| Custom | Configured and validated by the client |
+
+Changing between certified providers requires no application source-code changes or rebuild. Only deployment configuration, credentials, provider-supported infrastructure, and provider-owned assets change. Historical data, dashboards, alerts, SLOs, proprietary queries, retention policies, and provider-specific topology do not migrate automatically.
+
+Provider setup and migration documentation will live under `docs/providers/`, with dedicated guides for all certified destinations, a compatibility matrix, and a provider-switching runbook. Current endpoints, headers, and capabilities must be verified against official provider documentation during implementation rather than embedded as assumptions in Lumens core.
 
 ## Intended Developer Experience
 
@@ -240,7 +286,7 @@ attributes:
 
 ## Privacy and Safety
 
-Lumens applies source-level controls before telemetry reaches the Collector:
+Lumens applies source-level controls before telemetry leaves the application:
 
 - Secrets are always rejected.
 - Personal data is rejected unless explicitly approved.
@@ -251,7 +297,15 @@ Lumens applies source-level controls before telemetry reaches the Collector:
 - Baggage is deny-by-default and must never be used for authorization.
 - Policy violations produce bounded diagnostics without breaking application traffic.
 
-Collector redaction is defense in depth, not a substitute for safe instrumentation.
+Provider or Collector redaction is defense in depth, not a substitute for safe instrumentation.
+
+## Future Platform Options
+
+Phase 1 may provide an organization-managed OpenTelemetry gateway for centralized credentials, persistent queues, routing, sampling, redaction, dual-provider export, regional availability, and destination-specific enrichment. It is not required for the MVP architecture.
+
+Phase 3 may add a **Lumens Experience Generator**. It will derive a vendor-neutral asset specification from the semantic contract, service metadata, and a solution archetype, then use provider adapters for Dynatrace, Splunk, Datadog, Grafana, and New Relic to propose dashboards, alerts, monitors, and SLOs.
+
+The generator must use `generate`, `plan`, and explicitly approved `apply` stages. Provider tokens must never be exposed to a language model; production telemetry, payloads, PII, and customer data must not be sent to GenAI. Generated assets must be schema-validated, idempotent, auditable, version-tagged, drift-aware, and backed by deterministic templates when GenAI is unavailable.
 
 ## Repository Status
 
@@ -290,7 +344,7 @@ docker compose -f examples/cross-service/compose.yaml up --build --abort-on-cont
 .\scripts\verify.ps1
 ```
 
-The cross-language test must verify that Java and Python spans share one trace, preserve correct parentage, avoid duplicate HTTP spans, and continue serving requests when telemetry export is unavailable.
+The cross-language test must verify that Java and Python spans share one trace, preserve correct parentage, avoid duplicate HTTP spans, and continue serving requests when provider ingestion is unavailable.
 
 ## Package Identity
 
@@ -303,7 +357,7 @@ The cross-language test must verify that Java and Python spans share one trace, 
 | Instrumentation scope | `com.deloitte.lumens.observability` |
 | Default semantic namespace | `lumens` |
 
-These identities remain stable across client implementations. Client-specific service names, versions, environments, semantic catalogs, policies, and Collector destinations are configuration rather than forks.
+These identities remain stable across client implementations. Client-specific service names, versions, environments, semantic catalogs, policies, and provider destinations are configuration rather than forks.
 
 ## Contributing
 
