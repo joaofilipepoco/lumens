@@ -51,7 +51,18 @@ Node.js and NestJS should provide automatic standard server telemetry where supp
 
 Browser support requires explicit consent controls, Web Vitals, route/navigation tracing, error capture, fetch/XHR instrumentation, cross-origin propagation allowlists, session policy, and strict payload and PII protection. Provider access tokens must never be included in browser bundles. Browser export must use a provider-supported public RUM endpoint or a separately approved secure ingestion proxy. Provider portability for browser telemetry must not be claimed until each route is tested.
 
-### Phase 3: Lumens Experience Generator
+### Phase 3: AI Agent and GenAI Workload Observability
+
+- Agent and workflow execution traces.
+- Model request latency, failures, retries, and fallbacks.
+- Tool calls, retrieval operations, guardrail decisions, and human approval steps.
+- Multi-agent handoffs with correct trace parentage.
+- Token usage, estimated cost, and governed business outcomes.
+- Incrementally certified agent-framework and model-provider integrations.
+
+Use stable OpenTelemetry GenAI semantic conventions where available and govern Lumens extensions through the semantic contract. Prompts, responses, conversation history, retrieved documents, tool arguments, tool results, credentials, and customer data must not be captured by default.
+
+### Phase 4: Lumens Experience Generator
 
 - A shared GenAI-assisted planning engine.
 - A vendor-neutral asset specification.
@@ -678,9 +689,30 @@ Phase 2 requirements include:
 
 Phase 2 is not part of the current repository implementation order or MVP Definition of Done.
 
-## Phase 3: Lumens Experience Generator
+## Phase 3: AI Agent and GenAI Workload Observability
 
-Phase 3 may add an optional **Lumens Experience Generator** that creates provider assets from the Lumens semantic contract, service metadata, and a declared solution archetype:
+Phase 3 may add governed observability for AI agents and GenAI workloads in supported Java, Python, and later TypeScript runtimes.
+
+Phase 3 requirements include:
+
+- Represent an agent or workflow run as a trace or clearly bounded operation.
+- Trace model calls, tool calls, retrieval and vector-database operations, guardrails, human approvals, retries, fallbacks, and multi-agent handoffs.
+- Preserve parentage and context across asynchronous steps and framework boundaries.
+- Record bounded model and provider identifiers, latency, technical failures, token usage, estimated cost, and business outcomes where available.
+- Distinguish expected agent outcomes from technical errors.
+- Use stable OpenTelemetry GenAI semantic conventions where available and register any `lumens.*` extensions.
+- Keep metrics low-cardinality and independent of trace sampling.
+- Provide failure isolation so instrumentation never breaks an agent workflow.
+
+Privacy defaults must prohibit automatic capture of prompts, responses, conversation history, retrieved documents, embeddings, tool arguments, tool results, API keys, model credentials, user identifiers, and customer data. Any content capture requires an explicit policy, documented purpose, data classification, consent where applicable, redaction, retention controls, and dedicated tests.
+
+Candidate integrations include LangChain/LangGraph, Semantic Kernel, AutoGen, CrewAI, and model-provider SDKs. Each integration requires an explicit compatibility baseline, privacy review, duplicate-instrumentation tests, and conformance tests before it can be certified. Do not claim generic compatibility with all agent frameworks.
+
+Phase 3 should define agent-specific semantic contract entries and test fixtures that Phase 4 can use to generate agent health, model latency, tool reliability, token usage, cost, guardrail, and business-outcome dashboards.
+
+## Phase 4: Lumens Experience Generator
+
+Phase 4 may add an optional **Lumens Experience Generator** that creates provider assets from the Lumens semantic contract, service metadata, and a declared solution archetype:
 
 ```text
 semantic contract + service metadata + solution archetype
@@ -843,7 +875,8 @@ Document:
 - A provider-switching runbook with validation, rollback, asset recreation, old-agent removal, and credential revocation.
 - The Phase 1 optional organization-managed gateway and its ownership implications.
 - The Phase 2 JavaScript and TypeScript runtime architecture, browser security boundary, and deferred compatibility claims.
-- The Phase 3 Lumens Experience Generator architecture and safety boundaries.
+- The Phase 3 AI agent observability semantics, privacy defaults, framework certification model, and conformance requirements.
+- The Phase 4 Lumens Experience Generator architecture and safety boundaries.
 
 Each certified provider guide must document prerequisites, the recommended managed ingestion route, current endpoint format, authentication, secret handling, required environment variables, TLS, signal support, Java and Python setup, end-to-end verification, duplicate-instrumentation prevention, provider enrichment, limitations, troubleshooting, and rollback. Verify changeable provider details against current official documentation during implementation.
 
@@ -860,9 +893,10 @@ Each certified provider guide must document prerequisites, the recommended manag
 9. Implement and document the five certified managed-provider profiles.
 10. Build Java and Python reference applications.
 11. Implement cross-language, provider-failure, and destination-switching verification.
-12. Define the future vendor-neutral asset model and provider-adapter extension points without implementing GenAI writes.
-13. Add verification scripts and CI-ready checks.
-14. Run all tests and update the compatibility documents with actual results.
+12. Define future agent-observability semantic extension points without implementing Phase 3 integrations.
+13. Define the future vendor-neutral asset model and provider-adapter extension points without implementing GenAI writes.
+14. Add verification scripts and CI-ready checks.
+15. Run all tests and update the compatibility documents with actual results.
 
 ## Verification Commands
 
@@ -900,7 +934,7 @@ The MVP is complete only when:
 - Development and CI telemetry inspection uses only disposable test tooling.
 - No Deloitte-managed production Collector or gateway is required.
 - Provider credentials are absent from source, fixtures, telemetry, and diagnostics.
-- Phase 1 Collector, Phase 2 JavaScript/TypeScript ecosystem, and Phase 3 Experience Generator are documented but not implemented by the MVP Build Agent.
+- Phase 1 Collector, Phase 2 JavaScript/TypeScript ecosystem, Phase 3 agent observability, and Phase 4 Experience Generator are documented but not implemented by the MVP Build Agent.
 - All dependencies are pinned.
 - Compatibility results are documented.
 - No JavaScript, TypeScript, Node.js, NestJS, Next.js, React, or Angular implementation is included.

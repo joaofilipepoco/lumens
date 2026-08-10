@@ -100,6 +100,7 @@ OpenTelemetry owns trace IDs, span IDs, and parent relationships. Lumens does no
 - Vendor-specific telemetry APIs.
 - Automatic request or response payload capture.
 - A Deloitte-managed production Collector or telemetry gateway.
+- AI agent and GenAI workload instrumentation.
 - Automated GenAI creation of provider dashboards and other assets.
 
 ## Product Roadmap
@@ -111,13 +112,14 @@ The roadmap separates the current managed-services-first MVP from optional later
 | MVP | Java/Spring Boot, Python/FastAPI, automatic standard telemetry, governed business telemetry, and provider-managed ingestion profiles |
 | Phase 1 | Optional organization-managed OpenTelemetry Collector gateway |
 | Phase 2 | JavaScript and TypeScript ecosystem for Node.js, NestJS, Next.js, React, and Angular |
-| Phase 3 | Lumens Experience Generator for dashboards, alerts, monitors, and SLOs |
+| Phase 3 | AI agent and GenAI workload observability |
+| Phase 4 | Lumens Experience Generator for dashboards, alerts, monitors, and SLOs |
 
 Phase 1 is optional because operating a production gateway introduces infrastructure, security, availability, cost, and maintenance responsibilities. The MVP remains valid without it.
 
 Phase 2 should provide one TypeScript SDK distribution with runtime-specific entry points rather than one universal runtime implementation. Node.js and NestJS use server-side OpenTelemetry; Next.js requires separate server, browser, and Edge handling; React and Angular use browser-safe instrumentation. Browser bundles must never contain provider access tokens and must use a provider-supported public RUM route or a secure ingestion proxy. Consent, Web Vitals, route changes, errors, fetch/XHR tracing, propagation allowlists, and strict PII controls are required before browser support can be certified.
 
-Phase 3 is described under Future Platform Options and remains independent of application instrumentation.
+Phase 3 will add governed observability for agent runs, workflows, model calls, tool use, retrieval, guardrails, handoffs, token usage, and cost. Phase 4 is described under Future Platform Options and remains independent of application instrumentation.
 
 ## Instrumentation Modes
 
@@ -303,7 +305,11 @@ Provider or Collector redaction is defense in depth, not a substitute for safe i
 
 Phase 1 may provide an organization-managed OpenTelemetry gateway for centralized credentials, persistent queues, routing, sampling, redaction, dual-provider export, regional availability, and destination-specific enrichment. It is not required for the MVP architecture.
 
-Phase 3 may add a **Lumens Experience Generator**. It will derive a vendor-neutral asset specification from the semantic contract, service metadata, and a solution archetype, then use provider adapters for Dynatrace, Splunk, Datadog, Grafana, and New Relic to propose dashboards, alerts, monitors, and SLOs.
+Phase 3 may add AI agent and GenAI workload observability using stable OpenTelemetry GenAI semantic conventions where available. It will cover agent and workflow runs, model requests, tool calls, retrieval operations, retries, fallbacks, guardrail decisions, human approvals, multi-agent handoffs, token usage, estimated cost, and business outcomes.
+
+Agent telemetry must not capture prompts, responses, conversation history, retrieved documents, tool arguments, tool results, credentials, or customer data by default. Framework integrations such as LangChain/LangGraph, Semantic Kernel, AutoGen, CrewAI, and model-provider SDKs require individual compatibility and privacy validation before certification.
+
+Phase 4 may add a **Lumens Experience Generator**. It will derive a vendor-neutral asset specification from the semantic contract, service metadata, and a solution archetype, then use provider adapters for Dynatrace, Splunk, Datadog, Grafana, and New Relic to propose dashboards, alerts, monitors, and SLOs, including agent-specific assets when Phase 3 telemetry is available.
 
 The generator must use `generate`, `plan`, and explicitly approved `apply` stages. Provider tokens must never be exposed to a language model; production telemetry, payloads, PII, and customer data must not be sent to GenAI. Generated assets must be schema-validated, idempotent, auditable, version-tagged, drift-aware, and backed by deterministic templates when GenAI is unavailable.
 
