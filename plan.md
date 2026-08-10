@@ -144,6 +144,14 @@ The generator must allow client-specific generated Java packages and Python modu
   README.md
   docs/
     architecture.md
+    architecture/
+      context.md
+      components.md
+      telemetry-flows.md
+      deployment-models.md
+      security-boundaries.md
+      failure-model.md
+      roadmap.md
     getting-started-java.md
     getting-started-python.md
     instrumentation-modes.md
@@ -168,6 +176,10 @@ The generator must allow client-specific generated Java packages and Python modu
       003-business-event-delivery.md
       004-semantic-registry.md
       005-browser-deferred.md
+      006-provider-managed-ingestion.md
+      007-optional-collector-gateway.md
+      008-agent-observability.md
+      009-experience-generator.md
 
   contract/
     lumens-contract.yaml
@@ -852,6 +864,43 @@ Provider profile tests:
 
 ## Documentation Requirements
 
+### Architecture Documentation
+
+`docs/architecture.md` is the architecture index and concise executive overview. Detailed views belong under `docs/architecture/` so ownership, deployment, security, and phase-specific concerns can evolve independently.
+
+Required views:
+
+- `context.md`: system context, users, application workloads, Lumens components, managed providers, external dependencies, and Deloitte/client/provider responsibility boundaries.
+- `components.md`: Java and Python SDK modules, semantic registry and generator, provider profiles, event sinks, policy interfaces, test kits, and disposable OTLP test harness.
+- `telemetry-flows.md`: automatic server/client instrumentation, W3C propagation, custom operations, outcomes, metrics, logs, business events, export, provider switching, and failure-isolation sequences.
+- `deployment-models.md`: MVP direct provider-managed ingestion, provider-managed agents or ingestion components, and the optional Phase 1 organization-managed gateway including migration and dual-export considerations.
+- `security-boundaries.md`: credentials, secrets, trust boundaries, data classification, prohibited telemetry, browser ingestion, GenAI processing, provider APIs, and defense-in-depth controls.
+- `failure-model.md`: application behavior during SDK, exporter, network, provider, event-sink, test-harness, and future gateway failures, including buffering and data-loss expectations.
+- `roadmap.md`: architecture scope and dependencies for the MVP, optional Collector, JavaScript/TypeScript ecosystem, AI agent observability, and Experience Generator.
+
+Use Mermaid diagrams stored as text in Markdown. Include C4-style context and component diagrams, sequence diagrams for telemetry flows, deployment diagrams for ingestion models, trust-boundary diagrams for security, and workflow diagrams for provider migration and Experience Generator `generate -> plan -> approve -> apply` behavior. Diagrams must remain understandable in adjacent prose when Mermaid rendering is unavailable.
+
+Every architecture view must identify:
+
+- Scope and explicit exclusions.
+- Component responsibilities and ownership.
+- Data and control flows.
+- Public APIs, semantic contracts, and configuration boundaries.
+- Security, privacy, and trust boundaries.
+- Deployment topology and operational ownership.
+- Failure modes, degradation, retry, buffering, and data-loss behavior.
+- Compatibility assumptions and provider-specific limitations.
+- Relevant tests and Definition of Done criteria.
+
+Architecture Decision Records must use a consistent template containing status, context, decision, alternatives, consequences, security/privacy impact, operational ownership, and supersession links. In addition to the existing ADRs, create:
+
+- `006-provider-managed-ingestion.md`: why the MVP uses provider-managed ingestion and does not operate a Lumens production Collector.
+- `007-optional-collector-gateway.md`: adoption criteria, ownership, risks, and application independence for Phase 1.
+- `008-agent-observability.md`: GenAI semantic conventions, content-capture defaults, privacy controls, and framework certification for Phase 3.
+- `009-experience-generator.md`: vendor-neutral asset model, provider adapters, approval workflow, token boundary, drift, and auditability for Phase 4.
+
+Architecture documentation and ADRs must be updated in the same change as any implementation that alters component ownership, telemetry flow, security boundary, deployment model, public contract, or roadmap decision.
+
 Document:
 
 - Five-minute Java setup.
@@ -883,20 +932,21 @@ Each certified provider guide must document prerequisites, the recommended manag
 ## Implementation Order
 
 1. Create the repository structure and root documentation.
-2. Implement the semantic registry schema and validator.
-3. Implement deterministic Java and Python code generation.
-4. Implement Java API and in-memory test support.
-5. Implement Spring zero-touch standard instrumentation, auto-configuration, starter, runtime, and optional annotation behavior.
-6. Implement Python zero-touch standard instrumentation, core business helpers, FastAPI integration, optional decorators, and test support.
-7. Implement structured business-event sinks.
-8. Implement disposable OTLP conformance test tooling without a deployed Collector dependency.
-9. Implement and document the five certified managed-provider profiles.
-10. Build Java and Python reference applications.
-11. Implement cross-language, provider-failure, and destination-switching verification.
-12. Define future agent-observability semantic extension points without implementing Phase 3 integrations.
-13. Define the future vendor-neutral asset model and provider-adapter extension points without implementing GenAI writes.
-14. Add verification scripts and CI-ready checks.
-15. Run all tests and update the compatibility documents with actual results.
+2. Create the architecture views and ADRs that govern the MVP and roadmap.
+3. Implement the semantic registry schema and validator.
+4. Implement deterministic Java and Python code generation.
+5. Implement Java API and in-memory test support.
+6. Implement Spring zero-touch standard instrumentation, auto-configuration, starter, runtime, and optional annotation behavior.
+7. Implement Python zero-touch standard instrumentation, core business helpers, FastAPI integration, optional decorators, and test support.
+8. Implement structured business-event sinks.
+9. Implement disposable OTLP conformance test tooling without a deployed Collector dependency.
+10. Implement and document the five certified managed-provider profiles.
+11. Build Java and Python reference applications.
+12. Implement cross-language, provider-failure, and destination-switching verification.
+13. Define future agent-observability semantic extension points without implementing Phase 3 integrations.
+14. Define the future vendor-neutral asset model and provider-adapter extension points without implementing GenAI writes.
+15. Add verification scripts and CI-ready checks.
+16. Run all tests and update the compatibility documents with actual results.
 
 ## Verification Commands
 
@@ -934,6 +984,7 @@ The MVP is complete only when:
 - Development and CI telemetry inspection uses only disposable test tooling.
 - No Deloitte-managed production Collector or gateway is required.
 - Provider credentials are absent from source, fixtures, telemetry, and diagnostics.
+- Required architecture views and ADRs exist, agree with the implementation, and document responsibility and security boundaries.
 - Phase 1 Collector, Phase 2 JavaScript/TypeScript ecosystem, Phase 3 agent observability, and Phase 4 Experience Generator are documented but not implemented by the MVP Build Agent.
 - All dependencies are pinned.
 - Compatibility results are documented.

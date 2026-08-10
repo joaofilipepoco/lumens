@@ -313,6 +313,20 @@ Phase 4 may add a **Lumens Experience Generator**. It will derive a vendor-neutr
 
 The generator must use `generate`, `plan`, and explicitly approved `apply` stages. Provider tokens must never be exposed to a language model; production telemetry, payloads, PII, and customer data must not be sent to GenAI. Generated assets must be schema-validated, idempotent, auditable, version-tagged, drift-aware, and backed by deterministic templates when GenAI is unavailable.
 
+## Architecture Documentation
+
+Architecture will be maintained as version-controlled Markdown with Mermaid diagrams rather than one monolithic document. The documentation will provide:
+
+- A system context showing applications, Lumens, managed providers, users, and external dependencies.
+- Component views for the Java SDK, Python SDK, semantic contract, generator, provider profiles, and OTLP test harness.
+- Sequence diagrams for automatic instrumentation, context propagation, business telemetry, provider export, failure isolation, and provider switching.
+- Deployment views for MVP provider-managed ingestion and the optional Phase 1 organization-managed gateway.
+- Trust-boundary views covering application data, credentials, browser telemetry, GenAI, and provider APIs.
+- A roadmap view for the MVP and Phases 1 through 4.
+- Architecture Decision Records for durable choices and their consequences.
+
+Every phase must document scope, exclusions, responsibilities, data flows, APIs and contracts, security and privacy boundaries, deployment topology, failure modes, compatibility, testing, operational ownership, and Definition of Done. Provider guides remain separate because endpoints, authentication, signal support, and limitations change independently from the core architecture.
+
 ## Repository Status
 
 The repository currently contains the executable implementation plan:
