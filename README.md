@@ -64,15 +64,61 @@ OpenTelemetry owns trace IDs, span IDs, and parent relationships. Lumens does no
 
 | Component | Purpose |
 |---|---|
-| Java API | Business events, outcomes, optional custom operations, and policy interfaces |
-| Spring Boot integration | Auto-configuration for platform-managed and application-managed modes |
-| Python SDK | Business events, outcomes, optional custom operations, lifecycle, and FastAPI integration |
-| Semantic contract | YAML registry and JSON Schema for operations, attributes, outcomes, events, and baggage |
-| Contract generator | Deterministic Java and Python constants with client overlay support |
-| Provider profiles | Tested deployment configuration for certified managed providers |
-| OTLP test harness | Optional development and CI inspection; never deployed as solution infrastructure |
-| Test kits | In-memory telemetry assertions and cross-language conformance tests |
-| Reference services | Spring Boot BFF calling a FastAPI integration service |
+| Java API | Framework-independent operations, outcomes, business events, metrics, privacy/cardinality policy interfaces, and OpenTelemetry access |
+| Spring Boot integration | Starter, auto-configuration, mode selection, optional custom-operation annotations, and Spring test utilities |
+| Python SDK | Framework-independent lifecycle, operations, outcomes, business events, metrics, policies, and logging correlation |
+| FastAPI integration | Zero-touch FastAPI instrumentation, application-managed setup, platform-managed coexistence, and async-context support |
+| Semantic contract | Versioned YAML registry and JSON Schema for operations, attributes, outcomes, events, metrics, baggage, privacy, and cardinality |
+| Contract generator | Contract and client-overlay validation plus deterministic Java and Python constants |
+| Provider profiles | Deployment-only configuration and documentation for managed-provider ingestion; no provider SDK in application code |
+| OTLP test harness | Disposable in-process, container, or receiver-based development and CI inspection; never deployed as solution infrastructure |
+| Test kits | In-memory telemetry assertions and cross-language conformance utilities |
+| Reference services | Spring Boot BFF and FastAPI service proving automatic telemetry, propagation, business semantics, and failure isolation |
+
+### Component Boundaries
+
+Lumens separates application instrumentation, business semantics, export configuration, and test infrastructure:
+
+```text
+Application code
+  | standard framework/library activity
+  v
+OpenTelemetry instrumentation
+  | automatic technical telemetry
+  +-------------------------------------+
+  |                                     |
+  v                                     v
+Lumens Java/Python core            Optional custom operation
+  | outcomes, events, policies       | distinct internal work only
+  +------------------+------------------+
+                     |
+                     v
+          Canonical OTel + lumens.* telemetry
+                     |
+                     v
+       Destination profile and OTEL_* configuration
+                     |
+                     v
+       Provider-managed ingestion and observability backend
+```
+
+- **Application code** remains free of provider SDKs and normally requires no Lumens annotations or decorators.
+- **OpenTelemetry instrumentation** creates standard framework and library telemetry; Lumens must not duplicate it.
+- **Lumens core** adds only governed business semantics that automatic instrumentation cannot infer.
+- **The semantic contract** is the source of truth for approved names, fields, outcomes, and policies across Java and Python.
+- **Provider profiles** select a managed destination through deployment configuration. They must not change application telemetry semantics.
+- **Test infrastructure** verifies the emitted telemetry and is not a production dependency.
+
+### Ownership Model
+
+| Concern | Owner in MVP |
+|---|---|
+| Application behavior and business-event calls | Application team |
+| Lumens libraries, contracts, profiles, and test kits | Lumens/Deloitte delivery team |
+| Application deployment configuration and secret injection | Client platform or application operations team |
+| Managed ingestion availability, provider backend, dashboards, alerts, and retention | Selected provider and client operations team |
+
+Lumens does not operate a production Collector, store provider credentials, or own provider dashboards and alerts in the MVP. Those boundaries change only in the optional future gateway and Experience Generator phases.
 
 ## Scope
 
