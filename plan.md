@@ -99,7 +99,11 @@ OpenTelemetry must create and propagate trace IDs, span IDs, and parent relation
 
 The Build Agent must:
 
-- Implement the complete backend MVP, not only scaffolding.
+- Implement only the explicitly requested feature from the MVP Feature Plan, not the complete MVP in one request.
+- State a feature's unmet dependencies before starting it and do not implement unrequested later features.
+- Leave the repository buildable after each completed feature and run that feature's feasible verification.
+- Update affected architecture, ADR, contract, provider, and compatibility documentation in the same feature delivery.
+- Report completed acceptance criteria, test results, deferred work, and any blocked prerequisites.
 - Build in the currently empty workspace.
 - Use Maven for Java.
 - Use `uv`, `pyproject.toml`, and Hatchling for Python.
@@ -929,24 +933,166 @@ Document:
 
 Each certified provider guide must document prerequisites, the recommended managed ingestion route, current endpoint format, authentication, secret handling, required environment variables, TLS, signal support, Java and Python setup, end-to-end verification, duplicate-instrumentation prevention, provider enrichment, limitations, troubleshooting, and rollback. Verify changeable provider details against current official documentation during implementation.
 
-## Implementation Order
+## MVP Feature Plan
 
-1. Create the repository structure and root documentation.
-2. Create the architecture views and ADRs that govern the MVP and roadmap.
-3. Implement the semantic registry schema and validator.
-4. Implement deterministic Java and Python code generation.
-5. Implement Java API and in-memory test support.
-6. Implement Spring zero-touch standard instrumentation, auto-configuration, starter, runtime, and optional annotation behavior.
-7. Implement Python zero-touch standard instrumentation, core business helpers, FastAPI integration, optional decorators, and test support.
-8. Implement structured business-event sinks.
-9. Implement disposable OTLP conformance test tooling without a deployed Collector dependency.
-10. Implement and document the five certified managed-provider profiles.
-11. Build Java and Python reference applications.
-12. Implement cross-language, provider-failure, and destination-switching verification.
-13. Define future agent-observability semantic extension points without implementing Phase 3 integrations.
-14. Define the future vendor-neutral asset model and provider-adapter extension points without implementing GenAI writes.
-15. Add verification scripts and CI-ready checks.
-16. Run all tests and update the compatibility documents with actual results.
+Implement the MVP as the following independently requested features. A feature may add only the smallest supporting changes required by its stated acceptance criteria. Do not begin the next feature automatically.
+
+| ID | Feature | Depends on |
+|---|---|---|
+| MVP-F01 | Repository foundation and architecture documentation | None |
+| MVP-F02 | Semantic contract, validation, and code generation | MVP-F01 |
+| MVP-F03 | Java core observability API and test kit | MVP-F02 |
+| MVP-F04 | Python core observability API and test kit | MVP-F02 |
+| MVP-F05 | Spring Boot integration and zero-touch instrumentation | MVP-F03 |
+| MVP-F06 | FastAPI integration and zero-touch instrumentation | MVP-F04 |
+| MVP-F07 | Governed business events and policy enforcement | MVP-F03, MVP-F04 |
+| MVP-F08 | Provider profiles and provider documentation | MVP-F03, MVP-F04 |
+| MVP-F09 | Reference applications and cross-language conformance | MVP-F05, MVP-F06, MVP-F07, MVP-F08 |
+| MVP-F10 | Verification automation and MVP hardening | MVP-F09 |
+
+### MVP-F01: Repository Foundation And Architecture Documentation
+
+Scope:
+
+- Create the Maven, Python, contract-tool, provider-profile, example, test, and script structure defined in this plan.
+- Add root build configuration, pinned-version management placeholders, architecture views, ADRs, and contributor documentation.
+- Do not implement runtime instrumentation, provider export, or future phases.
+
+Acceptance criteria:
+
+- Repository layout matches the planned structure.
+- Architecture documentation and ADRs required by this plan exist and cross-reference the MVP and roadmap decisions.
+- Root build and lint or placeholder verification commands fail clearly when unimplemented components are invoked.
+
+### MVP-F02: Semantic Contract, Validation, And Code Generation
+
+Scope:
+
+- Implement the versioned YAML contract, JSON Schema, client-overlay validation, deterministic Java and Python constant generation, and `--check` support.
+- Define base operation, outcome, attribute, event, metric-dimension, baggage, privacy, and cardinality semantics.
+
+Acceptance criteria:
+
+- Valid contracts and overlays generate deterministic Java and Python output.
+- Invalid types, namespaces, duplicates, privacy/cardinality combinations, and breaking overlays fail with actionable messages.
+- Generated definitions have Java/Python parity and `--check` detects stale output.
+
+### MVP-F03: Java Core Observability API And Test Kit
+
+Scope:
+
+- Implement the Java API, operation lifecycle, outcomes, metrics, policy interfaces, and in-memory telemetry test kit.
+- Support synchronous and asynchronous core operation behavior before framework auto-configuration.
+
+Acceptance criteria:
+
+- Operations create correctly parented internal spans, bounded metrics independent of trace sampling, and governed attributes.
+- Success, failure, cancellation, manual lifecycle, and callback lifecycle behavior are tested.
+- Arguments, return values, payloads, secrets, and uncontrolled high-cardinality data are not captured automatically.
+
+### MVP-F04: Python Core Observability API And Test Kit
+
+Scope:
+
+- Implement Python lifecycle configuration, operation APIs, outcomes, metrics, policy interfaces, and in-memory telemetry test fixtures.
+- Support synchronous and asynchronous operations before FastAPI integration.
+
+Acceptance criteria:
+
+- Sync and async operations preserve metadata, restore `contextvars`, and correctly handle success, failure, and cancellation.
+- Metrics, privacy, cardinality, and failure-isolation behavior match the shared contract.
+- Arguments, return values, payloads, secrets, and uncontrolled high-cardinality data are not captured automatically.
+
+### MVP-F05: Spring Boot Integration And Zero-Touch Instrumentation
+
+Scope:
+
+- Implement Spring Boot starter, auto-configuration, runtime mode, instrumentation-mode conflict detection, optional custom-operation annotation behavior, and Spring test utilities.
+- Integrate the supported OpenTelemetry Java agent or Spring Boot starter without creating duplicate providers or framework spans.
+
+Acceptance criteria:
+
+- Supported Spring server and client telemetry works without Lumens annotations.
+- Platform-managed and application-managed modes initialize idempotently and reject clear conflicts.
+- Optional custom operations work for distinct internal operations and do not duplicate framework spans.
+
+### MVP-F06: FastAPI Integration And Zero-Touch Instrumentation
+
+Scope:
+
+- Implement FastAPI integration, platform-managed coexistence, application-managed initialization, logging correlation, and async context handling.
+- Preserve standard Python logging and avoid duplicate handlers or server spans.
+
+Acceptance criteria:
+
+- Supported FastAPI server and client telemetry works without Lumens decorators.
+- Repeated initialization, background tasks, `asyncio` propagation, cancellation, and logging coexistence are tested.
+- Platform-managed and application-managed modes do not replace an application-owned provider.
+
+### MVP-F07: Governed Business Events And Policy Enforcement
+
+Scope:
+
+- Implement registered business-event APIs and default structured logging sinks in Java and Python.
+- Enforce semantic registry, privacy, cardinality, and trace/span correlation policies across custom operations, events, and metrics.
+
+Acceptance criteria:
+
+- Events are validated, correlated when active context exists, and emitted without breaking application logic.
+- Invalid, sensitive, or unregistered fields are safely dropped with bounded diagnostics.
+- Business outcomes remain distinct from technical errors, and the same occurrence is not automatically emitted as multiple signal types.
+
+### MVP-F08: Provider Profiles And Provider Documentation
+
+Scope:
+
+- Implement deployment-only destination profiles for Dynatrace, Splunk Observability Cloud, Datadog, Grafana Cloud, New Relic, and generic OTLP.
+- Create provider setup, compatibility, and switching documentation.
+- Do not deploy or operate a Lumens production Collector.
+
+Acceptance criteria:
+
+- Every certified provider has documented managed ingestion, authentication, signal support, TLS, verification, limitations, rollback, and duplicate-instrumentation guidance.
+- Profiles validate configuration without exposing secrets and preserve canonical OpenTelemetry and `lumens.*` semantics.
+- Switching profile configuration requires no application source change or rebuild.
+
+### MVP-F09: Reference Applications And Cross-Language Conformance
+
+Scope:
+
+- Build the Java BFF, Python integration service, disposable OTLP test harness, normalized fixtures, and cross-language integration tests.
+- Exercise standard telemetry, a distinct internal operation, business outcomes, business events, privacy controls, provider failure isolation, and profile switching.
+
+Acceptance criteria:
+
+- The two services share a trace with correct server/client parentage and no duplicate HTTP spans.
+- Business metrics remain available when traces are unsampled.
+- Provider ingestion failures do not fail requests, and forbidden test markers do not appear in telemetry.
+
+### MVP-F10: Verification Automation And MVP Hardening
+
+Scope:
+
+- Finalize verification scripts, CI-ready checks, compatibility results, dependency pinning, documentation links, and full MVP regression coverage.
+- Do not implement Phase 1 through Phase 4 capabilities.
+
+Acceptance criteria:
+
+- Documented Java, Python, contract, provider-profile, and cross-service verification commands run or skip external credential checks clearly.
+- All MVP Definition of Done criteria are verified and compatibility results are recorded.
+- Deferred Phase 1 through Phase 4 work remains isolated from MVP implementation artifacts.
+
+## Feature Delivery Protocol
+
+When asked to implement a feature, the Build Agent must:
+
+1. Confirm the requested feature identifier and check its dependencies.
+2. Implement only that feature and minimal directly required fixes.
+3. Run the feature's feasible verification and report unavailable external checks explicitly.
+4. Update applicable contracts, architecture views, ADRs, provider guides, and compatibility records.
+5. Stop after the feature is complete; wait for an explicit request before starting another feature.
+
+The overall MVP Definition of Done applies only after `MVP-F10`. Earlier feature acceptance criteria define the delivery boundary for cost-controlled implementation.
 
 ## Verification Commands
 

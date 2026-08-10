@@ -121,6 +121,12 @@ Phase 2 should provide one TypeScript SDK distribution with runtime-specific ent
 
 Phase 3 will add governed observability for agent runs, workflows, model calls, tool use, retrieval, guardrails, handoffs, token usage, and cost. Phase 4 is described under Future Platform Options and remains independent of application instrumentation.
 
+## Incremental Delivery
+
+The MVP is delivered as independently requested features, not as one implementation request. Each feature in [`plan.md`](plan.md) has a stable identifier, prerequisites, scope, and acceptance criteria. Request a feature by identifier, for example: `Implement MVP-F03`.
+
+Only the requested feature and its explicitly approved prerequisites are implemented in a delivery. Each delivery must leave the repository buildable, run the feature's feasible verification, update affected architecture or contract documentation, and report deferred work. Completing all MVP features is required for the overall MVP Definition of Done; completing one feature does not imply that later features have been started.
+
 ## Instrumentation Modes
 
 Lumens will support two explicit modes. Applications must select one to prevent duplicate providers, exporters, and spans.
