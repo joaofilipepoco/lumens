@@ -49,7 +49,14 @@ if (Get-Command mvn -ErrorAction SilentlyContinue) {
     Write-Warning 'Maven is unavailable; MVP-F03 Java verification was skipped.'
 }
 if (Get-Command uv -ErrorAction SilentlyContinue) {
-    uv run --system-certs --project tools/contract pytest
+    uv run --system-certs --project python pytest python/tests
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    Write-Host 'MVP-F04 Python verification passed.'
+} else {
+    Write-Warning 'uv is unavailable; MVP-F04 Python verification was skipped.'
+}
+if (Get-Command uv -ErrorAction SilentlyContinue) {
+    uv run --system-certs --project tools/contract pytest tools/contract/tests
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     uv run --system-certs --project tools/contract lumens-contract generate --check
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

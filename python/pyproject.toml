@@ -4,11 +4,22 @@ build-backend = "hatchling.build"
 
 [project]
 name = "lumens-observability"
-version = "0.0.0"
-description = "Lumens Python observability SDK foundation"
+version = "0.1.0"
+description = "Lumens Python core observability API"
 requires-python = ">=3.11"
+dependencies = [
+  "opentelemetry-api==1.44.0",
+  "opentelemetry-sdk==1.44.0",
+]
+
+[dependency-groups]
+dev = [
+  "opentelemetry-sdk==1.44.0",
+  "pytest==8.4.2",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
-# MVP-F01 intentionally contains no Python runtime implementation.
+[tool.hatch.build.targets.wheel]
+packages = ["src/lumens_observability"]

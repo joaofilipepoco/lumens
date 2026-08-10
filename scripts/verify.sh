@@ -47,7 +47,13 @@ else
   printf 'Maven is unavailable; MVP-F03 Java verification was skipped.\n' >&2
 fi
 if command -v uv >/dev/null 2>&1; then
-  uv run --system-certs --project tools/contract pytest
+  uv run --system-certs --project python pytest python/tests
+  printf 'MVP-F04 Python verification passed.\n'
+else
+  printf 'uv is unavailable; MVP-F04 Python verification was skipped.\n' >&2
+fi
+if command -v uv >/dev/null 2>&1; then
+  uv run --system-certs --project tools/contract pytest tools/contract/tests
   uv run --system-certs --project tools/contract lumens-contract generate --check
   printf 'MVP-F02 contract verification passed.\n'
 else
