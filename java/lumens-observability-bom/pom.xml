@@ -9,4 +9,13 @@
   </parent>
   <artifactId>lumens-observability-bom</artifactId>
   <packaging>pom</packaging>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.deloitte.lumens</groupId>
+        <artifactId>lumens-observability-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

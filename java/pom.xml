@@ -20,29 +20,52 @@
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
-    <maven.antrun-plugin.version>3.1.0</maven.antrun-plugin.version>
+    <otel.version>1.59.0</otel.version>
+    <junit.version>5.13.4</junit.version>
+    <maven.compiler-plugin.version>3.14.1</maven.compiler-plugin.version>
+    <maven.surefire-plugin.version>3.5.4</maven.surefire-plugin.version>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.opentelemetry</groupId>
+        <artifactId>opentelemetry-api</artifactId>
+        <version>${otel.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.opentelemetry</groupId>
+        <artifactId>opentelemetry-sdk</artifactId>
+        <version>${otel.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.opentelemetry</groupId>
+        <artifactId>opentelemetry-sdk-testing</artifactId>
+        <version>${otel.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>${maven.antrun-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>mvp-f01-placeholder</id>
-            <phase>validate</phase>
-            <configuration>
-              <target>
-                <fail message="Java implementation is deferred to MVP-F03. MVP-F01 created only the repository foundation." />
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven.compiler-plugin.version}</version>
+          <configuration>
+            <release>${maven.compiler.release}</release>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven.surefire-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>

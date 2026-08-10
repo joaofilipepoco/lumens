@@ -4,7 +4,7 @@
 |---|---|---|
 | MVP-F01 | Complete | Foundation, architecture, ADRs, layout, and placeholder verification |
 | MVP-F02 | Complete | Versioned registry, schema, overlays, deterministic generation, and tests |
-| MVP-F03 | Planned | Java core API and test kit |
+| MVP-F03 | Complete | Java operations, outcomes, metrics, policies, async lifecycle, and in-memory test kit |
 | MVP-F04 | Planned | Python core API and test kit |
 | MVP-F05 | Planned | Spring Boot integration |
 | MVP-F06 | Planned | FastAPI integration |

@@ -40,6 +40,12 @@ for path in \
   fi
 
 printf 'MVP-F01 repository foundation verification passed.\n'
+if command -v mvn >/dev/null 2>&1; then
+  mvn -f java/pom.xml verify
+  printf 'MVP-F03 Java verification passed.\n'
+else
+  printf 'Maven is unavailable; MVP-F03 Java verification was skipped.\n' >&2
+fi
 if command -v uv >/dev/null 2>&1; then
   uv run --system-certs --project tools/contract pytest
   uv run --system-certs --project tools/contract lumens-contract generate --check

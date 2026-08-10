@@ -8,4 +8,11 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>lumens-observability-spring-boot-starter</artifactId>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
