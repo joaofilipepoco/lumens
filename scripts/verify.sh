@@ -48,7 +48,7 @@ else
 fi
 if command -v uv >/dev/null 2>&1; then
   uv run --system-certs --project python pytest python/tests
-  printf 'MVP-F04 Python verification passed.\n'
+  printf 'MVP-F04 and MVP-F06 Python verification passed.\n'
 else
   printf 'uv is unavailable; MVP-F04 Python verification was skipped.\n' >&2
 fi

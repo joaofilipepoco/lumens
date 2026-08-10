@@ -51,7 +51,7 @@ if (Get-Command mvn -ErrorAction SilentlyContinue) {
 if (Get-Command uv -ErrorAction SilentlyContinue) {
     uv run --system-certs --project python pytest python/tests
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    Write-Host 'MVP-F04 Python verification passed.'
+    Write-Host 'MVP-F04 and MVP-F06 Python verification passed.'
 } else {
     Write-Warning 'uv is unavailable; MVP-F04 Python verification was skipped.'
 }

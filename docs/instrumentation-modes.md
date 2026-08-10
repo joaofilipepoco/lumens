@@ -1,6 +1,6 @@
 # Instrumentation Modes
 
-Lumens supports two explicit Java modes. Select exactly one mode per application to prevent duplicate providers, exporters, and framework spans.
+Lumens supports two explicit modes per runtime. Select exactly one mode per application to prevent duplicate providers, exporters, and framework spans.
 
 ## Platform-Managed
 
@@ -31,3 +31,11 @@ The runtime initializes OpenTelemetry through the official SDK autoconfiguration
 - Repeated auto-configuration reuses the existing `LumensOperations` bean.
 - Do not annotate controllers, repositories, or supported clients with `@ObservedOperation` merely to obtain standard telemetry.
 - Use `@ObservedOperation` only for a distinct internal operation. Spring proxy self-invocation bypasses the aspect; use the programmatic `LumensOperations` API in that case.
+
+## Python And FastAPI
+
+Platform-managed Python applications use an existing `opentelemetry-instrument` setup and call `instrument_fastapi(app)` once. Lumens preserves the current providers and does not install logging handlers.
+
+Application-managed Python applications call `configure_application_observability` with application-owned tracer and meter providers, then pass the tracer provider to `instrument_fastapi`. The helper accepts explicit providers for safe application ownership and testing; it does not replace an already configured global provider.
+
+In both modes, the official FastAPI instrumentor owns standard ASGI server spans. Lumens core operations remain optional for distinct internal work.

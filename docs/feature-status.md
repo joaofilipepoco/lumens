@@ -7,7 +7,7 @@
 | MVP-F03 | Complete | Java operations, outcomes, metrics, policies, async lifecycle, and in-memory test kit |
 | MVP-F04 | Complete | Sync/async operations, outcomes, metrics, policies, and in-memory test coverage |
 | MVP-F05 | Complete | Spring mode auto-configuration, runtime initialization, optional operation aspect, and integration tests |
-| MVP-F06 | Planned | FastAPI integration |
+| MVP-F06 | Complete | FastAPI zero-touch instrumentation, provider coexistence, logging correlation, and async context tests |
 | MVP-F07 | Planned | Business events and policy enforcement |
 | MVP-F08 | Planned | Provider profiles and documentation |
 | MVP-F09 | Planned | Reference applications and conformance |
