@@ -60,6 +60,8 @@ if (Get-Command uv -ErrorAction SilentlyContinue) {
 if (Get-Command uv -ErrorAction SilentlyContinue) {
     uv run --system-certs --project tools/contract python providers/validate_profiles.py
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    uv run --system-certs --project tools/contract pytest providers/tests
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     uv run --system-certs --project tools/contract pytest tools/contract/tests
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     uv run --system-certs --project tools/contract lumens-contract generate --check

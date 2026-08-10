@@ -165,6 +165,8 @@ The generator must allow client-specific generated Java packages and Python modu
     client-customization.md
     troubleshooting.md
     compatibility.md
+    verification.md
+    mvp-definition-of-done.md
     feature-status.md
     providers/
       README.md
@@ -949,7 +951,7 @@ Implement the MVP as the following independently requested features. A feature m
 | MVP-F07 | Governed business events and policy enforcement | MVP-F03, MVP-F04 | Complete |
 | MVP-F08 | Provider profiles and provider documentation | MVP-F03, MVP-F04 | Complete |
 | MVP-F09 | Reference applications and cross-language conformance | MVP-F05, MVP-F06, MVP-F07, MVP-F08 | Complete |
-| MVP-F10 | Verification automation and MVP hardening | MVP-F09 | Planned |
+| MVP-F10 | Verification automation and MVP hardening | MVP-F09 | Complete |
 
 ### MVP-F01: Repository Foundation And Architecture Documentation
 

@@ -55,6 +55,7 @@ else
 fi
 if command -v uv >/dev/null 2>&1; then
   uv run --system-certs --project tools/contract python providers/validate_profiles.py
+  uv run --system-certs --project tools/contract pytest providers/tests
   uv run --system-certs --project tools/contract pytest tools/contract/tests
   uv run --system-certs --project tools/contract lumens-contract generate --check
   printf 'MVP-F02 contract verification passed.\n'

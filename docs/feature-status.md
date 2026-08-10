@@ -11,4 +11,4 @@
 | MVP-F07 | Complete | Registered Java/Python business events, policy validation, correlation, and structured logging sinks |
 | MVP-F08 | Complete | Managed provider profile metadata, validation, setup guides, compatibility matrix, and migration runbook |
 | MVP-F09 | Complete | Spring/FastAPI reference services, Compose harness, normalized OTLP fixture, and conformance test |
-| MVP-F10 | Planned | Verification automation and hardening |
+| MVP-F10 | Complete | CI workflow, compatibility baseline, verification guide, and MVP Definition of Done evidence |

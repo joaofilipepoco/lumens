@@ -173,7 +173,7 @@ The MVP is delivered as independently requested features, not as one implementat
 
 Only the requested feature and its explicitly approved prerequisites are implemented in a delivery. Each delivery must leave the repository buildable, run the feature's feasible verification, update affected architecture or contract documentation, and report deferred work. Completing all MVP features is required for the overall MVP Definition of Done; completing one feature does not imply that later features have been started.
 
-Current delivery status is maintained in [`docs/feature-status.md`](docs/feature-status.md). MVP-F01 through MVP-F09 provide the foundation, semantic contract, framework integrations, business events, provider profiles, and cross-language reference services; request MVP-F10 for verification automation and MVP hardening.
+The MVP feature plan is complete. Delivery status is maintained in [`docs/feature-status.md`](docs/feature-status.md); future work begins with the optional Phase 1 organization-managed gateway.
 
 ## Instrumentation Modes
 
@@ -419,6 +419,8 @@ docker compose -f examples/cross-service/compose.yaml up --build --abort-on-cont
 ```
 
 The cross-language test must verify that Java and Python spans share one trace, preserve correct parentage, avoid duplicate HTTP spans, and continue serving requests when provider ingestion is unavailable.
+
+See [verification](docs/verification.md), [compatibility](docs/compatibility.md), and the [MVP Definition of Done](docs/mvp-definition-of-done.md) for completed checks and credential-gated deployment validation.
 
 ## Package Identity
 
