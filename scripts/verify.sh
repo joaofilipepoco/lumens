@@ -40,4 +40,10 @@ for path in \
   fi
 
 printf 'MVP-F01 repository foundation verification passed.\n'
-printf 'MVP-F02 and later implementation checks are intentionally deferred.\n'
+if command -v uv >/dev/null 2>&1; then
+  uv run --system-certs --project tools/contract pytest
+  uv run --system-certs --project tools/contract lumens-contract generate --check
+  printf 'MVP-F02 contract verification passed.\n'
+else
+  printf 'uv is unavailable; MVP-F02 contract verification was skipped.\n' >&2
+fi

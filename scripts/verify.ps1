@@ -41,4 +41,12 @@ if ($missing) {
 }
 
 Write-Host 'MVP-F01 repository foundation verification passed.'
-Write-Host 'MVP-F02 and later implementation checks are intentionally deferred.'
+if (Get-Command uv -ErrorAction SilentlyContinue) {
+    uv run --system-certs --project tools/contract pytest
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    uv run --system-certs --project tools/contract lumens-contract generate --check
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    Write-Host 'MVP-F02 contract verification passed.'
+} else {
+    Write-Warning 'uv is unavailable; MVP-F02 contract verification was skipped.'
+}

@@ -941,7 +941,7 @@ Implement the MVP as the following independently requested features. A feature m
 | ID | Feature | Depends on | Status |
 |---|---|---|---|
 | MVP-F01 | Repository foundation and architecture documentation | None | Complete |
-| MVP-F02 | Semantic contract, validation, and code generation | MVP-F01 | Planned |
+| MVP-F02 | Semantic contract, validation, and code generation | MVP-F01 | Complete |
 | MVP-F03 | Java core observability API and test kit | MVP-F02 | Planned |
 | MVP-F04 | Python core observability API and test kit | MVP-F02 | Planned |
 | MVP-F05 | Spring Boot integration and zero-touch instrumentation | MVP-F03 | Planned |

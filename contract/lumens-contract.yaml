@@ -1,0 +1,70 @@
+contract:
+  name: lumens
+  version: 1.0.0
+  namespace: lumens
+
+operations:
+  integration.enrich:
+    owner: integration
+    description: Enrich data using an external integration
+    outcomes:
+      - success
+      - unavailable
+      - rejected
+      - failure
+    stability: stable
+
+attributes:
+  integration.provider:
+    owner: integration
+    description: Approved external integration provider
+    type: string
+    privacy: internal
+    cardinality: bounded
+    allowed_values:
+      - example-provider
+    metric_dimension: true
+    stability: stable
+  lumens.operation.outcome:
+    owner: lumens
+    description: Bounded business outcome for a Lumens operation
+    type: string
+    privacy: internal
+    cardinality: bounded
+    allowed_values:
+      - success
+      - failure
+      - cancelled
+      - unavailable
+      - rejected
+    metric_dimension: true
+    stability: stable
+
+events:
+  integration.enrichment.completed:
+    owner: integration
+    description: An integration enrichment completed
+    delivery: log
+    required_attributes:
+      - integration.provider
+      - lumens.operation.outcome
+    stability: stable
+
+metric_dimensions:
+  integration.provider:
+    owner: integration
+    description: Integration provider metric dimension
+    attribute: integration.provider
+    stability: stable
+  lumens.operation.outcome:
+    owner: lumens
+    description: Operation outcome metric dimension
+    attribute: lumens.operation.outcome
+    stability: stable
+
+baggage:
+  lumens.request.classification:
+    owner: lumens
+    description: Approved bounded request classification
+    privacy: internal
+    stability: stable

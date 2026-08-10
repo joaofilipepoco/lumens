@@ -1,0 +1,50 @@
+overlay:
+  extends: lumens
+  version: 1.0.0
+
+operations:
+  payment.authorize:
+    owner: payments
+    description: Authorize a payment with an approved payment provider
+    outcomes:
+      - approved
+      - declined
+      - unavailable
+      - failure
+    stability: stable
+
+attributes:
+  payment.provider:
+    owner: payments
+    description: Approved payment provider
+    type: string
+    privacy: internal
+    cardinality: bounded
+    allowed_values:
+      - example-payments
+    metric_dimension: true
+    stability: stable
+
+events:
+  payment.authorization.completed:
+    owner: payments
+    description: A payment authorization completed
+    delivery: log
+    required_attributes:
+      - payment.provider
+      - lumens.operation.outcome
+    stability: stable
+
+metric_dimensions:
+  payment.provider:
+    owner: payments
+    description: Payment provider metric dimension
+    attribute: payment.provider
+    stability: stable
+
+baggage:
+  payment.channel:
+    owner: payments
+    description: Approved bounded payment channel
+    privacy: internal
+    stability: stable
