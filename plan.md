@@ -165,6 +165,7 @@ The generator must allow client-specific generated Java packages and Python modu
     client-customization.md
     troubleshooting.md
     compatibility.md
+    feature-status.md
     providers/
       README.md
       dynatrace.md
@@ -937,18 +938,18 @@ Each certified provider guide must document prerequisites, the recommended manag
 
 Implement the MVP as the following independently requested features. A feature may add only the smallest supporting changes required by its stated acceptance criteria. Do not begin the next feature automatically.
 
-| ID | Feature | Depends on |
-|---|---|---|
-| MVP-F01 | Repository foundation and architecture documentation | None |
-| MVP-F02 | Semantic contract, validation, and code generation | MVP-F01 |
-| MVP-F03 | Java core observability API and test kit | MVP-F02 |
-| MVP-F04 | Python core observability API and test kit | MVP-F02 |
-| MVP-F05 | Spring Boot integration and zero-touch instrumentation | MVP-F03 |
-| MVP-F06 | FastAPI integration and zero-touch instrumentation | MVP-F04 |
-| MVP-F07 | Governed business events and policy enforcement | MVP-F03, MVP-F04 |
-| MVP-F08 | Provider profiles and provider documentation | MVP-F03, MVP-F04 |
-| MVP-F09 | Reference applications and cross-language conformance | MVP-F05, MVP-F06, MVP-F07, MVP-F08 |
-| MVP-F10 | Verification automation and MVP hardening | MVP-F09 |
+| ID | Feature | Depends on | Status |
+|---|---|---|---|
+| MVP-F01 | Repository foundation and architecture documentation | None | Complete |
+| MVP-F02 | Semantic contract, validation, and code generation | MVP-F01 | Planned |
+| MVP-F03 | Java core observability API and test kit | MVP-F02 | Planned |
+| MVP-F04 | Python core observability API and test kit | MVP-F02 | Planned |
+| MVP-F05 | Spring Boot integration and zero-touch instrumentation | MVP-F03 | Planned |
+| MVP-F06 | FastAPI integration and zero-touch instrumentation | MVP-F04 | Planned |
+| MVP-F07 | Governed business events and policy enforcement | MVP-F03, MVP-F04 | Planned |
+| MVP-F08 | Provider profiles and provider documentation | MVP-F03, MVP-F04 | Planned |
+| MVP-F09 | Reference applications and cross-language conformance | MVP-F05, MVP-F06, MVP-F07, MVP-F08 | Planned |
+| MVP-F10 | Verification automation and MVP hardening | MVP-F09 | Planned |
 
 ### MVP-F01: Repository Foundation And Architecture Documentation
 

@@ -1,0 +1,11 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lumens-contract-tools"
+version = "0.0.0"
+description = "Lumens semantic contract tooling foundation"
+requires-python = ">=3.11"
+
+# Contract validation and generation are implemented in MVP-F02.

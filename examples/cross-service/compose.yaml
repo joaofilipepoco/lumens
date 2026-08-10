@@ -1,0 +1,4 @@
+name: lumens-mvp-placeholder
+
+# MVP-F01 establishes the compose location. MVP-F09 adds reference services.
+services: {}

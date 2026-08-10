@@ -1,0 +1,5 @@
+version = 1
+revision = 1
+requires-python = ">=3.11"
+
+# MVP-F01 placeholder. MVP-F04 generates the resolved lockfile.

@@ -1,0 +1,14 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lumens-observability"
+version = "0.0.0"
+description = "Lumens Python observability SDK foundation"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+# MVP-F01 intentionally contains no Python runtime implementation.

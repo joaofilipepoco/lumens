@@ -173,6 +173,8 @@ The MVP is delivered as independently requested features, not as one implementat
 
 Only the requested feature and its explicitly approved prerequisites are implemented in a delivery. Each delivery must leave the repository buildable, run the feature's feasible verification, update affected architecture or contract documentation, and report deferred work. Completing all MVP features is required for the overall MVP Definition of Done; completing one feature does not imply that later features have been started.
 
+Current delivery status is maintained in [`docs/feature-status.md`](docs/feature-status.md). MVP-F01 provides the repository foundation; request `MVP-F02` to begin semantic contract implementation.
+
 ## Instrumentation Modes
 
 Lumens will support two explicit modes. Applications must select one to prevent duplicate providers, exporters, and spans.
