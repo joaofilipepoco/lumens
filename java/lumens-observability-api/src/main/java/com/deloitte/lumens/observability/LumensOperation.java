@@ -6,6 +6,12 @@ public interface LumensOperation extends AutoCloseable {
 
     void fail(Throwable error);
 
+    /**
+     * Releases the operation context without ending its span. Framework adapters use this before an
+     * asynchronous result completes; application code should normally use {@link #close()} instead.
+     */
+    void detach();
+
     @Override
     void close();
 }

@@ -8,6 +8,19 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>lumens-observability-spring-boot-starter</artifactId>
+  <packaging>pom</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>com.deloitte.lumens</groupId>
+      <artifactId>lumens-observability-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.deloitte.lumens</groupId>
+      <artifactId>lumens-observability-spring-boot-autoconfigure</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>

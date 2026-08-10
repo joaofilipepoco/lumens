@@ -1,6 +1,21 @@
 # Java Getting Started
 
-MVP-F03 provides the framework-independent Java core API. Spring Boot auto-configuration and zero-touch framework instrumentation are delivered in MVP-F05.
+MVP-F03 provides the framework-independent Java core API. MVP-F05 adds Spring Boot auto-configuration and delegates zero-touch Spring server/client instrumentation to the official OpenTelemetry Java agent or application-managed OpenTelemetry setup.
+
+## Spring Boot
+
+Use the platform-managed starter with the Java agent for standard Spring MVC/WebFlux telemetry. The agent creates standard HTTP spans without Lumens annotations.
+
+Use `@ObservedOperation` only for distinct internal work:
+
+```java
+@ObservedOperation("integration.enrich")
+public EnrichmentResult enrich() {
+    return integrationClient.enrich();
+}
+```
+
+For environments without an agent, use `lumens-observability-spring-boot-runtime` and set `lumens.observability.mode=application-managed`. See [instrumentation modes](instrumentation-modes.md) for mode selection and conflict rules.
 
 ## Core Operations
 

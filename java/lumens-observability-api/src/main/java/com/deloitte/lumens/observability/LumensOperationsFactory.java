@@ -134,15 +134,10 @@ public final class LumensOperationsFactory {
                 operation.close();
                 throw exception;
             } finally {
-                detach(operation);
+                operation.detach();
             }
         }
 
-        private static void detach(LumensOperation operation) {
-            if (operation instanceof DefaultLumensOperation defaultOperation) {
-                defaultOperation.detach();
-            }
-        }
     }
 
     private static final class DefaultLumensOperation implements LumensOperation {
@@ -214,7 +209,8 @@ public final class LumensOperationsFactory {
             }
         }
 
-        private void detach() {
+        @Override
+        public void detach() {
             if (detached.compareAndSet(false, true)) {
                 scope.close();
             }

@@ -6,7 +6,7 @@
 | MVP-F02 | Complete | Versioned registry, schema, overlays, deterministic generation, and tests |
 | MVP-F03 | Complete | Java operations, outcomes, metrics, policies, async lifecycle, and in-memory test kit |
 | MVP-F04 | Complete | Sync/async operations, outcomes, metrics, policies, and in-memory test coverage |
-| MVP-F05 | Planned | Spring Boot integration |
+| MVP-F05 | Complete | Spring mode auto-configuration, runtime initialization, optional operation aspect, and integration tests |
 | MVP-F06 | Planned | FastAPI integration |
 | MVP-F07 | Planned | Business events and policy enforcement |
 | MVP-F08 | Planned | Provider profiles and documentation |

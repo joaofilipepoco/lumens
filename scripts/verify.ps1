@@ -44,7 +44,7 @@ Write-Host 'MVP-F01 repository foundation verification passed.'
 if (Get-Command mvn -ErrorAction SilentlyContinue) {
     mvn -f java/pom.xml verify
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    Write-Host 'MVP-F03 Java verification passed.'
+    Write-Host 'MVP-F03 and MVP-F05 Java verification passed.'
 } else {
     Write-Warning 'Maven is unavailable; MVP-F03 Java verification was skipped.'
 }
