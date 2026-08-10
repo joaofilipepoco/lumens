@@ -17,6 +17,7 @@ from lumens_observability.fastapi import (
     run_in_background_context,
     shutdown_observability,
 )
+from lumens_observability.events import BusinessEvent, BusinessEvents, structured_logging_sink
 
 __all__ = [
     "AttributePolicy",
@@ -30,6 +31,9 @@ __all__ = [
     "install_logging_correlation",
     "capture_background_context",
     "run_in_background_context",
+    "BusinessEvent",
+    "BusinessEvents",
+    "structured_logging_sink",
     "deny_all_attributes",
     "registered_attributes",
 ]

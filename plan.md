@@ -946,7 +946,7 @@ Implement the MVP as the following independently requested features. A feature m
 | MVP-F04 | Python core observability API and test kit | MVP-F02 | Complete |
 | MVP-F05 | Spring Boot integration and zero-touch instrumentation | MVP-F03 | Complete |
 | MVP-F06 | FastAPI integration and zero-touch instrumentation | MVP-F04 | Complete |
-| MVP-F07 | Governed business events and policy enforcement | MVP-F03, MVP-F04 | Planned |
+| MVP-F07 | Governed business events and policy enforcement | MVP-F03, MVP-F04 | Complete |
 | MVP-F08 | Provider profiles and provider documentation | MVP-F03, MVP-F04 | Planned |
 | MVP-F09 | Reference applications and cross-language conformance | MVP-F05, MVP-F06, MVP-F07, MVP-F08 | Planned |
 | MVP-F10 | Verification automation and MVP hardening | MVP-F09 | Planned |

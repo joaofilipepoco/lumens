@@ -44,14 +44,14 @@ Write-Host 'MVP-F01 repository foundation verification passed.'
 if (Get-Command mvn -ErrorAction SilentlyContinue) {
     mvn -f java/pom.xml verify
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    Write-Host 'MVP-F03 and MVP-F05 Java verification passed.'
+    Write-Host 'MVP-F03, MVP-F05, and MVP-F07 Java verification passed.'
 } else {
     Write-Warning 'Maven is unavailable; MVP-F03 Java verification was skipped.'
 }
 if (Get-Command uv -ErrorAction SilentlyContinue) {
     uv run --system-certs --project python pytest python/tests
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    Write-Host 'MVP-F04 and MVP-F06 Python verification passed.'
+    Write-Host 'MVP-F04, MVP-F06, and MVP-F07 Python verification passed.'
 } else {
     Write-Warning 'uv is unavailable; MVP-F04 Python verification was skipped.'
 }

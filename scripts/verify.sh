@@ -42,13 +42,13 @@ for path in \
 printf 'MVP-F01 repository foundation verification passed.\n'
 if command -v mvn >/dev/null 2>&1; then
   mvn -f java/pom.xml verify
-  printf 'MVP-F03 and MVP-F05 Java verification passed.\n'
+  printf 'MVP-F03, MVP-F05, and MVP-F07 Java verification passed.\n'
 else
   printf 'Maven is unavailable; MVP-F03 Java verification was skipped.\n' >&2
 fi
 if command -v uv >/dev/null 2>&1; then
   uv run --system-certs --project python pytest python/tests
-  printf 'MVP-F04 and MVP-F06 Python verification passed.\n'
+  printf 'MVP-F04, MVP-F06, and MVP-F07 Python verification passed.\n'
 else
   printf 'uv is unavailable; MVP-F04 Python verification was skipped.\n' >&2
 fi
