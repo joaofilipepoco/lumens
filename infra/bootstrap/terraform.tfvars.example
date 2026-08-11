@@ -1,0 +1,5 @@
+aws_region = "eu-west-1"
+state_bucket_name = "replace-with-globally-unique-lumens-state-bucket"
+lock_table_name = "lumens-terraform-lock"
+name_prefix = "lumens-pilot"
+github_repository = "owner/lumens"

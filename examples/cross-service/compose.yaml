@@ -4,6 +4,11 @@ services:
       context: ../..
       dockerfile: examples/python-integration/Dockerfile
     ports: ["8081:8081"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8081/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
   java-bff:
     build:
       context: ../..
@@ -11,3 +16,6 @@ services:
     environment:
       PYTHON_INTEGRATION_URL: http://python-integration:8081
     ports: ["8080:8080"]
+    depends_on:
+      python-integration:
+        condition: service_healthy

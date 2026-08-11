@@ -418,7 +418,9 @@ docker compose -f examples/cross-service/compose.yaml up --build --abort-on-cont
 
 The cross-language test must verify that Java and Python spans share one trace, preserve correct parentage, avoid duplicate HTTP spans, and continue serving requests when provider ingestion is unavailable.
 
-See [verification](docs/verification.md), [compatibility](docs/compatibility.md), and the [MVP Definition of Done](docs/mvp-definition-of-done.md) for completed checks and credential-gated deployment validation.
+See [verification](docs/verification.md), [Docker testing](docs/testing-with-docker.md), [compatibility](docs/compatibility.md), and the [MVP Definition of Done](docs/mvp-definition-of-done.md) for completed checks and credential-gated deployment validation.
+
+For a live AWS ECS Fargate pilot with a Spring Boot BFF, FastAPI integration service, GitHub Actions deployment, AWS Secrets Manager, and Dynatrace direct OTLP, see [AWS ECS and Dynatrace pilot](docs/aws-ecs-dynatrace-pilot.md).
 
 ## Package Identity
 

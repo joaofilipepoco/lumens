@@ -10,6 +10,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from opentelemetry import metrics, trace
+from opentelemetry.distro import OpenTelemetryDistro
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.trace import TracerProvider
@@ -30,10 +31,10 @@ def configure_application_observability(
     current_tracer_provider = tracer_provider or trace.get_tracer_provider()
     current_meter_provider = meter_provider or metrics.get_meter_provider()
     if tracer_provider is None and type(current_tracer_provider).__module__.startswith("opentelemetry.trace"):
-        current_tracer_provider = TracerProvider()
-        trace.set_tracer_provider(current_tracer_provider)
-        current_meter_provider = MeterProvider()
-        metrics.set_meter_provider(current_meter_provider)
+        # Configure standard OTEL_* exporters before Lumens obtains its tracer and meter.
+        OpenTelemetryDistro().configure()
+        current_tracer_provider = trace.get_tracer_provider()
+        current_meter_provider = metrics.get_meter_provider()
     return configure_observability(
         contract_version,
         attribute_policy,

@@ -19,7 +19,7 @@ Provider live-ingestion tests are not run by default. They require client-owned 
 The Compose harness is optional:
 
 ```powershell
-docker compose -f examples/cross-service/compose.yaml up --build --abort-on-container-exit
+docker compose -f examples/cross-service/compose.yaml up --build -d
 ```
 
-It uses no provider credentials and remains separate from the required local verifier.
+It uses no provider credentials and remains separate from the required local verifier. See [testing Lumens with Docker](testing-with-docker.md) for service calls, expected responses, cleanup, and the current live cross-service propagation boundary.

@@ -226,6 +226,10 @@ The generator must allow client-specific generated Java packages and Python modu
       generic-otlp/
     tests/
 
+  infra/
+    bootstrap/
+    ecs/
+
   examples/
     java-bff/
     python-integration/

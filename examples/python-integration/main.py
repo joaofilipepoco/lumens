@@ -1,10 +1,15 @@
 from fastapi import FastAPI
 
-from lumens_observability import configure_observability, instrument_fastapi
+from lumens_observability import configure_application_observability, instrument_fastapi
 
 app = FastAPI()
-operations = configure_observability("1.0.0")
+operations = configure_application_observability("1.0.0")
 instrument_fastapi(app)
+
+
+@app.get("/health")
+async def health() -> dict[str, str]:
+    return {"status": "ok"}
 
 
 @app.get("/integrate")

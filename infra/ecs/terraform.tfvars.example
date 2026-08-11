@@ -1,0 +1,6 @@
+aws_region = "eu-west-1"
+name_prefix = "lumens-pilot"
+image_tag = "replace-with-git-sha"
+dynatrace_headers_secret_name = "lumens/dynatrace/otlp-headers"
+dynatrace_otlp_endpoint = "https://<environment-id>.live.dynatrace.com/api/v2/otlp"
+tags = { Environment = "pilot", Owner = "platform-team" }

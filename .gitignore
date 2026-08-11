@@ -18,3 +18,10 @@
 *.swp
 Thumbs.db
 Desktop.ini
+
+# Terraform local state and variable overrides
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+!*.tfvars.example
