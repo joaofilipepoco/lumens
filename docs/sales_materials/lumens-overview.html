@@ -266,9 +266,9 @@ operations.observe(<span class="value">"payment.authorize"</span>, op -&gt; {
           <div class="arrow">&#8594;</div>
           <div class="flow-step"><strong>Managed platform</strong><span>Dynatrace, Splunk, Datadog, Grafana Cloud, or New Relic.</span></div>
         </div>
-        <div class="code" style="margin-top:34px"><span class="key">LUMENS_PROVIDER</span>=<span class="value">splunk</span>
-<span class="key">OTEL_EXPORTER_OTLP_ENDPOINT</span>=<span class="muted">https://provider-endpoint.example</span>
-<span class="key">LUMENS_ACCESS_TOKEN</span>=<span class="comment">&lt;secret-manager-reference&gt;</span></div>
+        <div class="code" style="margin-top:34px"><span class="key">OTEL_EXPORTER_OTLP_ENDPOINT</span>=<span class="muted">http://telemetry-agent:4317</span>
+<span class="comment"># Agent / Collector owns credentials</span>
+<span class="key">OTEL_EXPORTER_OTLP_HEADERS</span>=<span class="comment">&lt;direct-OTLP secret, only when required&gt;</span></div>
         <p class="small" style="margin-top:18px">Dashboards, alerts, history, and provider AI remain destination assets. Application instrumentation stays portable.</p>
       </div>
       <div class="footer"><span>Lumens</span><span>08 / 09</span></div>

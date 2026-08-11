@@ -1,10 +1,10 @@
 provider: new-relic
 support: certified
-ingestion: managed_otlp
-transport: otlp_http
+recommended_topology: direct_otlp
+supported_topologies: [direct_otlp, customer_collector]
+application_configuration: standard_otel
 endpoint_variable: OTEL_EXPORTER_OTLP_ENDPOINT
-token_variable: LUMENS_ACCESS_TOKEN
-header_name: api-key
-header_template: ${LUMENS_ACCESS_TOKEN}
+headers_variable: OTEL_EXPORTER_OTLP_HEADERS
 signals: [traces, metrics, logs]
-notes: Verify regional OTLP endpoint and license-key permissions against New Relic documentation.
+credential_owner: client_secret_manager_or_customer_collector
+notes: Configure the New Relic regional OTLP endpoint and authentication through standard OTEL settings; verify ingest-key permissions.

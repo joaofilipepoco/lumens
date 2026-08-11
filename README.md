@@ -204,12 +204,10 @@ Instrumentation mode and export destination are independent decisions. A service
 The MVP certified destinations are Dynatrace, Splunk Observability Cloud, Datadog, Grafana Cloud, and New Relic. Each profile uses the provider's managed OTLP endpoint or provider-managed ingestion component. Lumens and Deloitte do not deploy or operate an OpenTelemetry Collector as part of the MVP solution.
 
 ```text
-LUMENS_PROVIDER=dynatrace
-OTEL_EXPORTER_OTLP_ENDPOINT=https://provider-endpoint.example
-LUMENS_ACCESS_TOKEN=<deployment-secret>
+OTEL_EXPORTER_OTLP_ENDPOINT=http://telemetry-agent:4317
 ```
 
-Standard `OTEL_*` configuration remains authoritative. `LUMENS_PROVIDER` selects tested authentication, protocol, and signal conventions because these details differ by provider. Credentials come from a deployment secret manager, use least privilege, support rotation, and must never enter source code or telemetry.
+Standard `OTEL_*` configuration remains authoritative. Applications export to client/provider-managed infrastructure: a provider Agent, customer-managed Collector, provider-supported component, or direct OTLP endpoint. Lumens does not transform vendor tokens or headers. For direct OTLP, the client injects `OTEL_EXPORTER_OTLP_HEADERS` from a secret manager. Credentials use least privilege, support rotation, and must never enter source code or telemetry. `LUMENS_PROVIDER` is optional metadata for documentation, compatibility validation, and future asset generation.
 
 Lumens defines three support levels:
 

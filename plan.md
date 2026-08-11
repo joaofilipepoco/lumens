@@ -322,17 +322,15 @@ Support levels:
 Use a minimal deployment interface equivalent to:
 
 ```text
-LUMENS_PROVIDER=dynatrace
-OTEL_EXPORTER_OTLP_ENDPOINT=https://provider-endpoint.example
-LUMENS_ACCESS_TOKEN=<deployment-secret>
+OTEL_EXPORTER_OTLP_ENDPOINT=http://telemetry-agent:4317
 ```
 
-Standard `OTEL_*` variables remain authoritative. `LUMENS_PROVIDER` selects tested authentication headers, transport, signal endpoints, and documented limitations. Do not infer a provider from its endpoint. Verify current endpoints, headers, and supported capabilities against official provider documentation during implementation.
+Standard `OTEL_*` variables remain authoritative. Lumens does not translate vendor tokens into headers or infer a provider from an endpoint. Applications export to a provider Agent, customer-managed Collector, provider-supported component, or direct OTLP endpoint. For direct OTLP, the client injects `OTEL_EXPORTER_OTLP_HEADERS` through its secret manager. `LUMENS_PROVIDER` is optional metadata for documentation, compatibility validation, and future asset generation. Verify current endpoints, headers, and supported capabilities against official provider documentation during implementation.
 
 Each certified profile must:
 
-- Prefer direct managed OTLP ingestion where the provider supports it reliably.
-- Otherwise use a provider-managed ingestion component.
+- Document a recommended topology and supported topologies for every provider.
+- Keep credentials and header composition in client/provider-managed infrastructure, not Lumens application configuration.
 - Require no provider-specific SDK or telemetry API in application code.
 - Preserve canonical OpenTelemetry resource attributes and governed `lumens.*` semantics.
 - Document traces, metrics, and logs support separately.
@@ -340,7 +338,7 @@ Each certified profile must:
 - Provide configuration validation and actionable diagnostics without logging secrets.
 - Permit credential rotation without rebuilding the application.
 
-Secrets must come from environment variables or an approved secret manager, use least privilege, and never be committed, sent as telemetry, included in fixtures, or exposed through diagnostics.
+Direct-OTLP headers must come from environment variables or an approved secret manager, use least privilege, and never be committed, sent as telemetry, included in fixtures, or exposed through diagnostics. Agent and customer-Collector credentials belong to that infrastructure rather than to application workloads.
 
 Provider-specific enrichment such as Dynatrace `dt.*` entity metadata, Datadog `dd.*` metadata, Splunk-specific dimensions, Grafana data-source labels, or New Relic proprietary entity metadata may be added by provider-managed infrastructure. Lumens core must not depend on these fields.
 

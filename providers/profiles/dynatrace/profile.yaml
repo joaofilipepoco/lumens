@@ -1,10 +1,10 @@
 provider: dynatrace
 support: certified
-ingestion: managed_otlp
-transport: otlp_http
+recommended_topology: direct_otlp
+supported_topologies: [direct_otlp, customer_collector]
+application_configuration: standard_otel
 endpoint_variable: OTEL_EXPORTER_OTLP_ENDPOINT
-token_variable: LUMENS_ACCESS_TOKEN
-header_name: Authorization
-header_template: Api-Token ${LUMENS_ACCESS_TOKEN}
+headers_variable: OTEL_EXPORTER_OTLP_HEADERS
 signals: [traces, metrics, logs]
-notes: Verify tenant-specific OTLP endpoint and token scopes against current Dynatrace documentation.
+credential_owner: client_secret_manager_or_customer_collector
+notes: Direct OTLP pilot profile. Configure the Dynatrace authorization header through standard OTEL_EXPORTER_OTLP_HEADERS; verify tenant endpoint and token scopes against current Dynatrace documentation.

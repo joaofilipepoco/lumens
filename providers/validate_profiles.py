@@ -7,8 +7,9 @@ from pathlib import Path
 
 import yaml
 
-REQUIRED = {"provider", "support", "ingestion", "transport", "endpoint_variable", "token_variable", "header_name", "header_template", "signals", "notes"}
+REQUIRED = {"provider", "support", "recommended_topology", "supported_topologies", "application_configuration", "endpoint_variable", "headers_variable", "signals", "credential_owner", "notes"}
 CERTIFIED = {"dynatrace", "splunk", "datadog", "grafana-cloud", "new-relic"}
+TOPOLOGIES = {"direct_otlp", "provider_agent", "provider_managed_component", "customer_collector"}
 
 
 def main() -> int:
@@ -25,8 +26,14 @@ def main() -> int:
         seen.add(provider)
         if not profile["endpoint_variable"].startswith("OTEL_"):
             raise ValueError(f"{provider}: endpoint must use a standard OTEL_* variable.")
-        if profile["token_variable"] != "LUMENS_ACCESS_TOKEN":
-            raise ValueError(f"{provider}: token variable must remain generic and secret-manager supplied.")
+        if profile["headers_variable"] != "OTEL_EXPORTER_OTLP_HEADERS":
+            raise ValueError(f"{provider}: headers must use the standard OTEL_EXPORTER_OTLP_HEADERS variable.")
+        if profile["application_configuration"] != "standard_otel":
+            raise ValueError(f"{provider}: Lumens profiles must use standard OTEL application configuration.")
+        if profile["recommended_topology"] not in TOPOLOGIES or not set(profile["supported_topologies"]) <= TOPOLOGIES:
+            raise ValueError(f"{provider}: unsupported delivery topology.")
+        if profile["recommended_topology"] not in profile["supported_topologies"]:
+            raise ValueError(f"{provider}: recommended topology must be supported.")
         if not set(profile["signals"]) <= {"traces", "metrics", "logs"}:
             raise ValueError(f"{provider}: unsupported signal declaration.")
     if not CERTIFIED <= seen:

@@ -1,10 +1,10 @@
 provider: datadog
 support: certified
-ingestion: managed_agent
-transport: otlp_grpc_or_http
+recommended_topology: provider_agent
+supported_topologies: [provider_agent, customer_collector, direct_otlp]
+application_configuration: standard_otel
 endpoint_variable: OTEL_EXPORTER_OTLP_ENDPOINT
-token_variable: LUMENS_ACCESS_TOKEN
-header_name: DD-API-KEY
-header_template: ${LUMENS_ACCESS_TOKEN}
+headers_variable: OTEL_EXPORTER_OTLP_HEADERS
 signals: [traces, metrics, logs]
-notes: Prefer Datadog Agent OTLP ingestion; verify agent configuration and API-key scopes.
+credential_owner: datadog_agent_or_customer_collector
+notes: Prefer Datadog Agent OTLP ingestion. The application points OTEL_EXPORTER_OTLP_ENDPOINT at the Agent; DD_API_KEY belongs to the Agent, not to the application.
